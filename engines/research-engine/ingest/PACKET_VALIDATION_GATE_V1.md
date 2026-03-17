@@ -1,0 +1,6 @@
+PACKET_VALIDATION_GATE_V1
+
+Scope: Structural pre-NTI validation for SOURCE_PACKET_V1 packets.
+
+Status:
+LOCKED — PACKET_VALIDATION_GATE_V1

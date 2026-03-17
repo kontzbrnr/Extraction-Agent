@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "season_state.schema.json",
+  "title": "SeasonRunStateV1",
+  "description": "Per-season execution state. Read and written on every orchestrator invocation. Governs batch progress, termination, and crash recovery.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "season",
+    "terminationStatus",
+    "microBatchCount",
+    "auditCycleCount",
+    "retryFailureCount",
+    "incompleteBatchFlag",
+    "activeBatchId",
+    "commitState",
+    "subcategoryCounts",
+    "exhaustionCounters",
+    "lastUpdated"
+  ],
+  "$comment": "Governing contract: ORCHESTRATOR-EXECUTION-CONTRACT.md\n  Section IV (microBatchCount, auditCycleCount, subcategoryCounts, exhaustionCounters)\n  Section V (terminationStatus enum)\n  Section VI (incompleteBatchFlag — crash recovery)\n  Section VII (retryFailureCount)\n\nbatch_id format (design decision): BATCH_{season}_{microBatchCount:04d}\nbatch_id is operational state — not canonical identity.\nDeterministic Global Identity Framework does not govern pre-canonical\noperational identifiers.\n\ncommit_state lifecycle: idle → in_progress → committed | failed\nRequired for read-back verification per Section IV Step 3:\n\"Verify write by read-back.\"\n\nCrash recovery: On invocation, if incompleteBatchFlag === true,\ndiscard entire batch, reset activeBatchId to null, set\nincompleteBatchFlag to false, initiate new micro-batch.\nPer Section VI: \"No partial resume. No cluster-level resume.\"",
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "SEASON_STATE-1.0"
+    },
+    "season": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Season identifier. Matches /runs/{season}/ directory name."
+    },
+    "terminationStatus": {
+      "type": "string",
+      "enum": ["running", "sealed", "exhausted", "system_failure"],
+      "description": "'running' = normal operation. 'sealed' = NTI allSurfacesSealed. 'exhausted' = NTI exhaustionTriggered. 'system_failure' = retry failure threshold reached. No new micro-batch if != 'running'."
+    },
+    "microBatchCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total micro-batches completed this season run. Incremented at end-of-batch boundary per Section IV Step 4."
+    },
+    "auditCycleCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of NTI audit cycles completed. Incremented when audit interval threshold is reached."
+    },
+    "retryFailureCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Consecutive specialist agent failures. If >= 2, terminationStatus set to 'system_failure' per Section VII."
+    },
+    "incompleteBatchFlag": {
+      "type": "boolean",
+      "description": "Set to true when a micro-batch begins. Set to false on successful checkpoint. If true on invocation start, crash recovery protocol activates: discard batch, do not mutate canonical registry."
+    },
+    "activeBatchId": {
+      "type": ["string", "null"],
+      "description": "ID of the currently active micro-batch. Null when no batch is in progress. Format: BATCH_{season}_{microBatchCount:04d}. Set at batch start, cleared on successful checkpoint."
+    },
+    "commitState": {
+      "type": "string",
+      "enum": ["idle", "in_progress", "committed", "failed"],
+      "description": "Tracks atomic commit status for read-back verification. idle = no active commit. in_progress = write started. committed = read-back confirmed. failed = write not confirmed."
+    },
+    "subcategoryCounts": {
+      "type": "object",
+      "description": "NTI surface subcategory coverage counts. Keys are surface names. Values are integer counts. Updated at end-of-batch boundary.",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "exhaustionCounters": {
+      "type": "object",
+      "description": "NTI exhaustion tracking counters per surface. Updated at end-of-batch boundary.",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "lastUpdated": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ISO-8601 timestamp of last state write. Updated on every successful checkpoint."
+    }
+  }
+}

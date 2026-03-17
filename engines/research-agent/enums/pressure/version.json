@@ -1,0 +1,18 @@
+{
+  "registryId": "PRESSURE_ENUM_REGISTRY_V1",
+  "version": "ENUM_v1.0",
+  "lane": "pressure",
+  "fingerprintParticipation": true,
+  "frozenAt": "ENUM_v1.0",
+  "governanceNote": "Per CANONICAL-ENUM-REGISTRY.md Governance Clause II: any modification to enum values that affects fingerprint-participating fields REQUIRES (1) enumRegistryVersion increment, (2) fingerprintVersion increment within PSTA v4, (3) replay determinism revalidation. Silent enum changes are prohibited. Cross-lane enum reuse is a contract violation.",
+  "requiredEnumKeys": [
+    "signal_class",
+    "environment",
+    "pressure_signal_domain",
+    "pressure_vector",
+    "signal_polarity",
+    "observation_source",
+    "cast_requirement",
+    "tier"
+  ]
+}

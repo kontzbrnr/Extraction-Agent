@@ -1,0 +1,123 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "fileId": "VERSION_LOCK_V1",
+  "lockedAt": "PHASE_0_COMPLETE",
+  "governanceNote": "This file is the authoritative version snapshot for all canonical schemas, enum registries, and fingerprint specifications. CIV uses this snapshot for Version Snapshot Integrity validation (check 6). No agent may reference version strings from any other source. All version values are contract-derived. Modification requires coordinated version bump across all affected schemas and registries.",
+
+  "canonicalObjectSchemas": {
+    "pressure": {
+      "schemaVersion": "CPS-1.0",
+      "fingerprintVersion": "CPS_FINGERPRINT_V1",
+      "enumRegistryVersion": "ENUM_v1.0",
+      "enumRegistryId": "PRESSURE_ENUM_REGISTRY_V1",
+      "contractSource": "PRESSURE-SIGNAL-TRANSFORMATION-AGENT.md (PSTA v4)",
+      "schemaFile": "schemas/pressure/canonical_pressure_object.schema.json",
+      "schemaFileHasConst": false,
+      "note": "schemaVersion participates in CPS_FINGERPRINT_V1 as field 1. Schema file does not currently enforce const — gap to be resolved in schema revision."
+    },
+    "narrative": {
+      "schemaVersion": "CSN-1.0",
+      "fingerprintVersion": "CSN_FINGERPRINT_V1",
+      "enumRegistryVersion": "ENUM_v1.0",
+      "enumRegistryId": "EVENT_ENUM_REGISTRY_V1",
+      "contractSource": "STANDALONE-NARRATIVE-TRANSFORMER-AGENT.md (SANTA v1.0)",
+      "schemaFile": "schemas/narrative/canonical_narrative_csn_object.schema.json",
+      "schemaFileHasConst": false,
+      "note": "CSN schema uses contractVersion field; schemaVersion derived from fingerprint prefix CSN-1.0. Schema file does not currently define schemaVersion field — gap to be resolved in schema revision."
+    },
+    "media": {
+      "schemaVersion": "CME-1.0",
+      "fingerprintVersion": "CME_FINGERPRINT_V1",
+      "enumRegistryVersion": "ENUM_v1.0",
+      "enumRegistryId": "MEDIA_ENUM_REGISTRY_V1",
+      "contractSource": "MEDIA-EVENT-TRANSFORMER-AGENT.md (META v1.0)",
+      "schemaFile": "schemas/cme.schema.json",
+      "schemaFileHasConst": false,
+      "note": "Schema file does not currently enforce schemaVersion const — gap to be resolved in schema revision."
+    },
+    "structural": {
+      "schemaVersion": "CSE-1.0",
+      "fingerprintVersion": "CSE_FINGERPRINT_V1",
+      "enumRegistryVersion": null,
+      "enumRegistryId": null,
+      "contractSource": "STRUCTURAL-TRANSFORMATION-AGENT.md",
+      "schemaFile": "schemas/cse.schema.json",
+      "schemaFileHasConst": false,
+      "note": "CSE schema built out of Phase sequence. No dedicated enum registry for structural lane — domain/scope enums embedded in schema. Schema file may not be present on disk."
+    }
+  },
+
+  "supportSchemas": {
+    "REC": {
+      "schemaVersion": "REC-1.0",
+      "schemaFile": "schemas/rec.schema.json",
+      "schemaFileHasConst": true
+    },
+    "AU": {
+      "schemaVersion": "AU-1.0",
+      "schemaFile": "schemas/au.schema.json",
+      "schemaFileHasConst": true
+    },
+    "PCR": {
+      "schemaVersion": "PCR-1.0",
+      "schemaFile": "schemas/pcr.schema.json",
+      "schemaFileHasConst": true
+    }
+  },
+
+  "ledgerSchemas": {
+    "globalState": {
+      "schemaVersion": "GLOBAL_STATE-1.0",
+      "schemaFile": "schemas/ledger/global_state.schema.json",
+      "schemaFileHasConst": true
+    },
+    "seasonState": {
+      "schemaVersion": "SEASON_STATE-1.0",
+      "schemaFile": "schemas/ledger/season_state.schema.json",
+      "schemaFileHasConst": true
+    },
+    "canonicalRegistry": {
+      "schemaVersion": "CANONICAL_REGISTRY-1.0",
+      "schemaFile": "schemas/ledger/canonical_objects.schema.json",
+      "schemaFileHasConst": true
+    },
+    "cycleLog": {
+      "schemaVersion": "CYCLE_LOG-1.0",
+      "schemaFile": "schemas/ledger/cycle_log.schema.json",
+      "schemaFileHasConst": true
+    }
+  },
+
+  "enumRegistries": {
+    "pressure": {
+      "registryId": "PRESSURE_ENUM_REGISTRY_V1",
+      "version": "ENUM_v1.0",
+      "lane": "pressure",
+      "registryFile": "enums/pressure/registry.json"
+    },
+    "narrative": {
+      "registryId": "EVENT_ENUM_REGISTRY_V1",
+      "version": "ENUM_v1.0",
+      "lane": "narrative",
+      "registryFile": "enums/narrative/registry.json"
+    },
+    "media": {
+      "registryId": "MEDIA_ENUM_REGISTRY_V1",
+      "version": "ENUM_v1.0",
+      "lane": "media",
+      "registryFile": "enums/media/registry.json"
+    }
+  },
+
+  "auditSchemas": {
+    "PSAR": {
+      "schemaVersion": "PSAR_v1.0",
+      "contractSource": "PRESSURE-SIGNAL-AUDIT-RECORD.md"
+    },
+    "rejectionCodeRegistry": {
+      "registryId": "REJECTION_CODE_REGISTRY_V1",
+      "version": "v1.0",
+      "registryFile": "enums/shared/rejection_codes.json"
+    }
+  }
+}

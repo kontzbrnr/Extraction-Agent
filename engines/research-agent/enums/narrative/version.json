@@ -1,0 +1,35 @@
+{
+  "registryId": "EVENT_ENUM_REGISTRY_V1",
+  "version": "ENUM_v1.0",
+  "lane": "narrative",
+  "fingerprintVersion": "CSN_FINGERPRINT_V1",
+  "fingerprintParticipation": true,
+  "fingerprintParticipatingFields": [
+    "actorRole",
+    "action",
+    "objectRole",
+    "contextRole",
+    "ncaSubclass"
+  ],
+  "nonParticipatingRegistries": [
+    "TIME_BUCKET_REGISTRY_V1"
+  ],
+  "tokenCounts": {
+    "actorRole": 32,
+    "action": 34,
+    "objectRole": 22,
+    "contextRole": 17,
+    "ncaSubclass": 6,
+    "timeBucketTierA": 8
+  },
+  "governanceNote": "Any addition or change to token values in actorRole, action, objectRole, contextRole, or ncaSubclass requires increment to ENUM_v1.1 and corresponding increment to fingerprintVersion (CSN_FINGERPRINT_V2). Existing tokens are immutable within a version. No synonyms, no compound tokens except challenged_authority (semantics locked by ACTION_TAXONOMY_CONTRACT.md Section VI), no cross-lane reuse with PRESSURE_ENUM_REGISTRY_V1.",
+  "lockedAt": "ENUM_v1.0",
+  "contractAuthority": [
+    "EVENT_ENUM_REGISTRY_V1.md",
+    "ACTOR_ROLE_TAXONOMY_CONTRACT.md",
+    "ACTION_TAXONOMY_CONTRACT.md",
+    "OBJECT_ROLE_TAXONOMY_CONTRACT.md",
+    "CONTEXT_ROLE_TAXONOMY_CONTRACT.md",
+    "TIME_BUCKET_REGISTRY_V1.md"
+  ]
+}

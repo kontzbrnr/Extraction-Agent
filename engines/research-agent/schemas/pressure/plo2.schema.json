@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pressure-Legible Observation 2.0 (PLO2-1.0)",
+  "description": "SSI output. Post-extraction. Pre-enum-normalization. One record per observation. Contract authority: STRUCTURAL-SIGNAL-INTERPRETER.md",
+  "type": "object",
+  "required": ["ploID", "actorGroup_raw", "action_raw", "objectRole_raw", "domain", "sourceSeedId", "cycleMetadata"],
+  "additionalProperties": false,
+  "properties": {
+    "ploID": {
+      "type": "string",
+      "pattern": "^PLO2_[a-f0-9]{64}$",
+      "description": "Content-derived PLO-2.0 identifier. SHA-256 hex of sourceSeedId|domain|observation."
+    },
+    "actorGroup_raw": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Raw extracted actor group. Not normalized to enum. Lowercase normalized."
+    },
+    "action_raw": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Raw extracted action verb lemma. Not normalized to enum. Lowercase normalized."
+    },
+    "objectRole_raw": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Raw extracted object role. Not normalized to enum. Lowercase normalized."
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Perceptual expansion domain label. Inherited from PLO-1.0 observation."
+    },
+    "sourceSeedId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ID of the originating Atomic Unit. Inherited from PLO-1.0."
+    },
+    "cycleMetadata": {
+      "type": "object",
+      "description": "Opaque run context supplied by orchestrator. SSI forwards without validation."
+    }
+  }
+}

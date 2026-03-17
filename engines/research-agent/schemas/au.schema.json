@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "au.schema.json",
+  "title": "AtomicUnitV1",
+  "description": "Post-atomicity-enforcement extraction unit. Complete, self-contained, indivisible ontological component. Pre-typing. Pre-lane. Pre-canonical.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "text", "parentSourceID", "sourceReference", "splitIndex", "schemaVersion"],
+  "$comment": "AU_FINGERPRINT (design decision — not contract-specified):\nNormalization norm(x): trim → lowercase → collapse whitespace to _ → remove disallowed punctuation → null = empty\nConcatenation: AU-1.0 | text_norm | parentSourceID_norm | sourceReference_norm\nHash: SHA-256 → lowercase hex\nID format: AU_<sha256hex>\n\nSEEDTYPE INTENTIONALLY ABSENT:\nPer GLOBAL-SPLIT-DOCTRINE.md: \"Seed: An atomic, post-split structural unit eligible\nfor classification and routing (typed into exactly one seed category).\"\nSeed typing produces a new typed seed object downstream.\nThe AU schema is pre-typing and must remain lane-neutral.\nNo seedType field is permitted on AU.\n\nORDERING REQUIREMENT:\nPer CREATIVE-LIBRARY-EXTRACTION-AGENT.md: \"Atomicity Enforcement must produce\nidentical AU count, AU ordering, AU textual boundaries.\"\nsplitIndex enforces this at schema level. Replay with identical input MUST\nproduce identical splitIndex values. Ordering drift is a contract violation.\n\nparentSourceID may reference either:\n- A PCR parentSourceId (if this AU came from a composite split)\n- A REC id directly (if the REC was already atomic — no split occurred)",
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "AU-1.0"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^AU_[a-f0-9]{64}$",
+      "description": "Content-derived ID. AU_<sha256hex> of normalized text + parentSourceID + sourceReference. Stable across replays given identical input."
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Atomic clause text. Complete, self-contained, indivisible. No rewriting. No summarization. Verbatim from source."
+    },
+    "parentSourceID": {
+      "type": "string",
+      "description": "Pointer to origin. References either a PCR parentSourceId (composite split) or a REC id (already atomic). Required per GLOBAL-SPLIT-DOCTRINE.md."
+    },
+    "sourceReference": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Article or cluster pointer. Archival origin reference. Required per GLOBAL-SPLIT-DOCTRINE.md. Not present on REC — carried by AU only."
+    },
+    "splitIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "0-based position of this AU within its sibling set. Required for deterministic ordering enforcement. AUs from non-composite RECs use splitIndex: 0."
+    }
+  }
+}

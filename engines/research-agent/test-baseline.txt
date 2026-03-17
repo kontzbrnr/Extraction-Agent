@@ -1,0 +1,78 @@
+/Users/nicholas/Desktop/contentlib-docs/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+........................................................................ [  3%]
+........................................................................ [  7%]
+...............FFFFFFFFF................................................ [ 11%]
+............................F........................................... [ 15%]
+........................................................F............... [ 19%]
+........................................................................ [ 22%]
+..............F......................................................... [ 26%]
+.........F.............................................................. [ 30%]
+.....................F.................................................. [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 41%]
+........................................................................ [ 45%]
+.............FFF...............................................FFFF..... [ 49%]
+........................................................................ [ 53%]
+.....................................FFFF............................F.. [ 57%]
+....................................................FFF...FFF.F......... [ 60%]
+.........FFFF........................................................... [ 64%]
+........................................................................ [ 68%]
+........................................................................ [ 72%]
+........................................................................ [ 76%]
+........................................................................ [ 79%]
+........................................................................ [ 83%]
+................F.F.FF...FF.FF........FF................................ [ 87%]
+........................................................................ [ 91%]
+........................................................................ [ 95%]
+........................................................................ [ 98%]
+.....................                                                    [100%]
+=========================== short test summary info ============================
+FAILED tests/emi/test_emi_agent.py::test_enforce_emi_wrong_schema_version_rejects
+FAILED tests/emi/test_emi_agent.py::test_enforce_emi_missing_required_au_field_rejects
+FAILED tests/emi/test_emi_agent.py::test_enforce_emi_non_dict_au_rejects - At...
+FAILED tests/emi/test_emi_agent.py::test_enforce_emi_does_not_mutate_input - ...
+FAILED tests/emi/test_emi_agent.py::test_enforce_emi_speculative_text_rejects
+FAILED tests/emi/test_emi_agent.py::test_enforce_emi_valid_text_passes - Attr...
+FAILED tests/emi/test_emi_agent.py::test_enforce_emi_valid_text_nar_schema_version
+FAILED tests/emi/test_emi_agent.py::test_enforce_emi_valid_text_source_seed_id
+FAILED tests/emi/test_emi_agent.py::test_enforce_emi_iav_rejection_passthrough
+FAILED tests/enums/test_role_token_registry.py::test_determinism - subprocess...
+FAILED tests/extraction/test_extraction_agent.py::test_no_forbidden_imports
+FAILED tests/extraction/test_rec_producer.py::test_no_forbidden_imports - Fil...
+FAILED tests/gsd/test_composite_ruleset.py::test_is_composite_is_same_object
+FAILED tests/ingest/test_controller.py::test_submit_does_not_call_mark_batch_start
+FAILED tests/narrative/test_ane_identity_audit.py::test_only_ane_fingerprint_defines_ane_fingerprint_version
+FAILED tests/narrative/test_ane_identity_audit.py::test_only_ane_fingerprint_builds_aneseed_id_using_prefix_variable
+FAILED tests/narrative/test_ane_identity_audit.py::test_only_ane_id_format_defines_aneseed_prefix_constant
+FAILED tests/ncg/test_narrative_pipeline_gate.py::test_cme_classification_deferred_guard_blocks_meta
+FAILED tests/ncg/test_narrative_pipeline_gate.py::test_valid_csn_event_pass_and_santa_called
+FAILED tests/ncg/test_narrative_pipeline_gate.py::test_nca_failure_blocks_transformers
+FAILED tests/ncg/test_narrative_pipeline_gate.py::test_ncg_failure_blocks_transformers
+FAILED tests/nti/test_surface_quota_floor_enforcer.py::test_negative_threshold_no_preflight_called
+FAILED tests/nti/test_surface_quota_floor_enforcer.py::test_negative_threshold_no_season_state_read
+FAILED tests/nti/test_surface_quota_floor_enforcer.py::test_preflight_called_once_per_invocation
+FAILED tests/nti/test_surface_quota_floor_enforcer.py::test_two_calls_two_preflight_reads
+FAILED tests/nti/test_surface_rotation_controller.py::test_preflight_called_on_every_invocation
+FAILED tests/nti/test_termination_evaluator.py::test_preflight_called_once - ...
+FAILED tests/nti/test_termination_evaluator.py::test_two_calls_two_preflight_reads
+FAILED tests/nti/test_termination_evaluator.py::test_get_sealed_surfaces_called_on_every_invocation
+FAILED tests/nti/test_termination_evaluator.py::test_set_termination_status_not_called_on_running
+FAILED tests/nti/test_termination_evaluator.py::test_set_termination_status_called_with_correct_status_on_sealed
+FAILED tests/nti/test_termination_evaluator.py::test_set_termination_status_called_with_correct_status_on_exhausted
+FAILED tests/nti/test_termination_evaluator.py::test_determinism_exhaustion_path
+FAILED tests/openclaw/test_openclaw_binding.py::TestBindingIntegrityContaminated::test_raises_on_psta_attribute
+FAILED tests/openclaw/test_openclaw_binding.py::TestBindingIntegrityContaminated::test_raises_on_civ_attribute
+FAILED tests/openclaw/test_openclaw_binding.py::TestBindingIntegrityContaminated::test_raises_on_emi_attribute
+FAILED tests/openclaw/test_openclaw_binding.py::TestBindingIntegrityContaminated::test_error_message_names_forbidden_module
+FAILED tests/pressure/test_pressure_pipeline_gate.py::TestPressurePipelineGate::test_assembler_empty_audit_has_assembler_key
+FAILED tests/pressure/test_pressure_pipeline_gate.py::TestPressurePipelineGate::test_assembler_empty_rejections_forwarded
+FAILED tests/pressure/test_pressure_pipeline_gate.py::TestPressurePipelineGate::test_full_pass_composite_audit_has_all_keys
+FAILED tests/pressure/test_pressure_pipeline_gate.py::TestPressurePipelineGate::test_full_pass_returns_passed_psars
+FAILED tests/pressure/test_pressure_pipeline_gate.py::TestPressurePipelineGate::test_invalid_psar_gate_rejection_reason_code
+FAILED tests/pressure/test_pressure_pipeline_gate.py::TestPressurePipelineGate::test_invalid_psar_produces_gate_rejection
+FAILED tests/pressure/test_pressure_pipeline_gate.py::TestPressurePipelineGate::test_psca_rejected_psars_in_all_rejections
+FAILED tests/pressure/test_pressure_pipeline_gate.py::TestPressurePipelineGate::test_rejection_order_ssi_then_2a_then_validation
+FAILED tests/pressure/test_pressure_pipeline_gate.py::TestPressurePipelineGate::test_ssi_rejections_forwarded
+FAILED tests/pressure/test_pressure_pipeline_gate.py::TestPressurePipelineGate::test_valid_psar_reaches_psca
+47 failed, 1846 passed in 3.35s

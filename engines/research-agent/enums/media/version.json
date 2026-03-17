@@ -1,0 +1,17 @@
+{
+  "registryId": "MEDIA_ENUM_REGISTRY_V1",
+  "version": "ENUM_v1.1",
+  "lane": "media",
+  "fingerprintVersion": "CME_FINGERPRINT_V1",
+  "fingerprintParticipatingFields": ["subtype"],
+  "tokenCounts": {
+    "subtype": 12,
+    "framingType": 7
+  },
+  "governanceNote": "Any addition or change to subtype token values requires increment to ENUM_v1.1. Existing tokens are immutable within a version. 'other' is a permanent member of the taxonomy — it may not be removed. No cross-lane token reuse with PRESSURE_ENUM_REGISTRY_V1 or EVENT_ENUM_REGISTRY_V1.",
+  "lockedAt": "ENUM_v1.1",
+  "contractAuthority": [
+    "MEDIA-EVENT-TRANSFORMER-AGENT.md (Section V)",
+    "MEDIA-EVENT-TRANSFORMER-AGENT(META).md (Section V)"
+  ]
+}

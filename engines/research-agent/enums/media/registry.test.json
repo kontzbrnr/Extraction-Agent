@@ -1,0 +1,16 @@
+[
+  {"test": "ME-001: registryId === \"MEDIA_ENUM_REGISTRY_V1\"", "expectedResult": "pass"},
+  {"test": "ME-002: version === \"ENUM_v1.0\"", "expectedResult": "pass"},
+  {"test": "ME-003: lane === \"media\"", "expectedResult": "pass"},
+  {"test": "ME-004: subtype.values.length === 12", "expectedResult": "pass"},
+  {"test": "ME-005: All subtype values are snake_case (/^[a-z][a-z0-9_]*$/)", "expectedResult": "pass"},
+  {"test": "ME-006: subtype values are unique (Set size === array length)", "expectedResult": "pass"},
+  {"test": "ME-007: subtype.fingerprintParticipation === true", "expectedResult": "pass"},
+  {"test": "ME-008: subtype.nullPermitted === false", "expectedResult": "pass"},
+  {"test": "ME-009: subtype contains all 12 required values: structural, transactional, disciplinary, award, record, administrative, contractual, medical, competitive_result, retirement, reinstatement, other", "expectedResult": "pass"},
+  {"test": "ME-010: Zero overlap between subtype.values and pressure registry (load enums/pressure/registry.json, flatten all .values arrays, check intersection === 0)", "expectedResult": "pass"},
+  {"test": "ME-011: Zero overlap between subtype.values and narrative registry (load enums/narrative/registry.json, flatten all enums[*].values arrays, check intersection === 0)", "expectedResult": "pass"},
+  {"test": "ME-012: Schema sync — subtype.values matches schemas/cme.schema.json properties.subtype.enum exactly (same values, same count; order-independent)", "expectedResult": "pass"},
+  {"test": "ME-013: openItems key exists and is non-empty (gap documentation present)", "expectedResult": "pass"},
+  {"test": "ME-014: version.json tokenCounts.subtype === 12", "expectedResult": "pass"}
+]

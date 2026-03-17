@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "cycle_log.schema.json",
+  "title": "CycleLogV1",
+  "description": "Cycle Association Log. Maps canonical object IDs to the cycle metadata of each execution in which they were observed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "entries"],
+  "$comment": "Governing contracts:\n  ORCHESTRATOR-EXECUTION-CONTRACT.md Section IX (file named)\n  PRESSURE-LIFECYCLE-CONTRACT.md: \"Cycle Association Log: maps Canonical CPS ID\n    to observed cycle metadata (season, phase, week, cycleID)\"\n  NARRATIVE-LIFECYCLE-CONTRACT.md: \"Cycle Association Log: ledger mapping\n    narrative objects to execution cycles\"\n  ORCHESTRATOR-FINAL-REPORT-CONTRACT.md: cycleMetadata field definitions\n\nORDERING: Entries must be sorted by canonicalId ascending, then by cycleId\nascending. Required for determinismChecksum stability.\n\nOne entry per canonical object per cycle observed.\nDuplicate-structural-occurrence events (PSTA returning DUPLICATE status)\nproduce a new cycle_log entry on the existing canonical ID —\nthey do NOT produce a new canonical object.",
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "CYCLE_LOG-1.0"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["canonicalId", "cycleId", "season", "phase", "week", "observedAt"],
+        "properties": {
+          "canonicalId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Canonical object ID. CPS_*, CME_*, CSN_*, CSE_*, or AU_* prefix."
+          },
+          "cycleId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Execution cycle identifier. e.g., 2025_OFFSEASON_CYCLE_01"
+          },
+          "season": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Season identifier. e.g., 2025"
+          },
+          "phase": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Season phase. e.g., OFFSEASON, REGULAR_SEASON, PLAYOFFS"
+          },
+          "week": {
+            "type": ["string", "null"],
+            "description": "Week identifier if applicable. Null for non-weekly phases."
+          },
+          "observedAt": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ISO-8601 timestamp of the invocation that produced this entry."
+          }
+        }
+      }
+    }
+  }
+}

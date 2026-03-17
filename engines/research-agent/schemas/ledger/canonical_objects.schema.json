@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "canonical_objects.schema.json",
+  "title": "CanonicalRegistryV1",
+  "description": "Append-only canonical object registry. Lane-keyed arrays. Objects are persisted exactly as emitted by transformation agents.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "CPS", "CME", "CSN", "StructuralEnvironment", "MediaContext"],
+  "$comment": "Governing contract: ORCHESTRATOR-EXECUTION-CONTRACT.md Section IV Step 3,\nSection IX; GLOBAL CANONICAL IMMUTABILITY LOCK (append-only rule).\n\nAPPEND-ONLY: \"Registry cardinality may increase only through new canonical\nmint events.\" Objects in these arrays must never be modified after insertion.\n\nLANE KEYS match ORCHESTRATOR-FINAL-REPORT-CONTRACT.md canonicalOutputs shape:\nCPS / CME / CSN / StructuralEnvironment / MediaContext\n\nItem schemas are NOT validated here — items are validated by their respective\ncanonical schemas (cps.schema.json, cme.schema.json, etc.) at write time.\nThis registry schema validates structure only.\n\nORDERING: Arrays must be sorted by canonicalId ascending when written.\nRequired for determinismChecksum stability across replays per\nORCHESTRATOR-FINAL-REPORT-CONTRACT.md Section V.\n\nMediaContext array is a stub pending MFU contract authoring (Phase 0.4 deferral).",
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "CANONICAL_REGISTRY-1.0"
+    },
+    "CPS": {
+      "type": "array",
+      "items": {},
+      "description": "Canonical Pressure Signals. Append-only. Sorted by canonicalId ascending."
+    },
+    "CME": {
+      "type": "array",
+      "items": {},
+      "description": "Canonical Media Events. Append-only. Sorted by canonicalId ascending."
+    },
+    "CSN": {
+      "type": "array",
+      "items": {},
+      "description": "Canonical Standalone Narratives. Append-only. Sorted by canonicalId ascending."
+    },
+    "StructuralEnvironment": {
+      "type": "array",
+      "items": {},
+      "description": "Structural Environment Canonical Units (CSE). Append-only. Note: CSE lastConfirmed field is the only permitted post-mint mutation — this occurs at STA dedup resolution, not at registry level."
+    },
+    "MediaContext": {
+      "type": "array",
+      "items": {},
+      "description": "STUB — pending MFU canonical contract authoring (Phase 0.4 deferral). Array must be present and empty until MFU-1.0 is implemented."
+    }
+  }
+}

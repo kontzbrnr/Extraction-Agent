@@ -1,0 +1,207 @@
+{
+  "suite": "EVENT_ENUM_REGISTRY_V1 — Narrative Enum Registry Tests",
+  "registryFile": "enums/narrative/registry.json",
+  "tests": [
+    {
+      "id": "NE-001",
+      "description": "registryId is EVENT_ENUM_REGISTRY_V1",
+      "assertion": "registry.registryId === 'EVENT_ENUM_REGISTRY_V1'"
+    },
+    {
+      "id": "NE-002",
+      "description": "version is ENUM_v1.0",
+      "assertion": "registry.version === 'ENUM_v1.0'"
+    },
+    {
+      "id": "NE-003",
+      "description": "lane is narrative",
+      "assertion": "registry.lane === 'narrative'"
+    },
+    {
+      "id": "NE-004",
+      "description": "actorRole contains exactly 32 values",
+      "assertion": "registry.enums.actorRole.values.length === 32"
+    },
+    {
+      "id": "NE-005",
+      "description": "action contains exactly 34 values",
+      "assertion": "registry.enums.action.values.length === 34"
+    },
+    {
+      "id": "NE-006",
+      "description": "objectRole contains exactly 22 values",
+      "assertion": "registry.enums.objectRole.values.length === 22"
+    },
+    {
+      "id": "NE-007",
+      "description": "contextRole contains exactly 17 values",
+      "assertion": "registry.enums.contextRole.values.length === 17"
+    },
+    {
+      "id": "NE-008",
+      "description": "ncaSubclass contains exactly 6 values",
+      "assertion": "registry.enums.ncaSubclass.values.length === 6"
+    },
+    {
+      "id": "NE-009",
+      "description": "timeBucketRegistry Tier A contains exactly 8 values",
+      "assertion": "registry.timeBucketRegistry.tierA.values.length === 8"
+    },
+    {
+      "id": "NE-010",
+      "description": "All actorRole values are snake_case",
+      "assertion": "registry.enums.actorRole.values.every(v => /^[a-z][a-z0-9_]*$/.test(v))"
+    },
+    {
+      "id": "NE-011",
+      "description": "All action values are snake_case",
+      "assertion": "registry.enums.action.values.every(v => /^[a-z][a-z0-9_]*$/.test(v))"
+    },
+    {
+      "id": "NE-012",
+      "description": "All objectRole values are snake_case",
+      "assertion": "registry.enums.objectRole.values.every(v => /^[a-z][a-z0-9_]*$/.test(v))"
+    },
+    {
+      "id": "NE-013",
+      "description": "All contextRole values are snake_case",
+      "assertion": "registry.enums.contextRole.values.every(v => /^[a-z][a-z0-9_]*$/.test(v))"
+    },
+    {
+      "id": "NE-014",
+      "description": "All ncaSubclass values are snake_case",
+      "assertion": "registry.enums.ncaSubclass.values.every(v => /^[a-z][a-z0-9_]*$/.test(v))"
+    },
+    {
+      "id": "NE-015",
+      "description": "actorRole values are unique (no duplicates)",
+      "assertion": "new Set(registry.enums.actorRole.values).size === registry.enums.actorRole.values.length"
+    },
+    {
+      "id": "NE-016",
+      "description": "action values are unique (no duplicates)",
+      "assertion": "new Set(registry.enums.action.values).size === registry.enums.action.values.length"
+    },
+    {
+      "id": "NE-017",
+      "description": "objectRole values are unique (no duplicates)",
+      "assertion": "new Set(registry.enums.objectRole.values).size === registry.enums.objectRole.values.length"
+    },
+    {
+      "id": "NE-018",
+      "description": "contextRole values are unique (no duplicates)",
+      "assertion": "new Set(registry.enums.contextRole.values).size === registry.enums.contextRole.values.length"
+    },
+    {
+      "id": "NE-019",
+      "description": "ncaSubclass values are unique (no duplicates)",
+      "assertion": "new Set(registry.enums.ncaSubclass.values).size === registry.enums.ncaSubclass.values.length"
+    },
+    {
+      "id": "NE-020",
+      "description": "All five fingerprint-participating enums have fingerprintParticipation: true",
+      "assertion": "['actorRole','action','objectRole','contextRole','ncaSubclass'].every(k => registry.enums[k].fingerprintParticipation === true)"
+    },
+    {
+      "id": "NE-021",
+      "description": "timeBucketRegistry has fingerprintParticipation: false",
+      "assertion": "registry.timeBucketRegistry.fingerprintParticipation === false"
+    },
+    {
+      "id": "NE-022",
+      "description": "actorRole includes unspecified_actor (ABSTRACT level fallback)",
+      "assertion": "registry.enums.actorRole.values.includes('unspecified_actor')"
+    },
+    {
+      "id": "NE-023",
+      "description": "objectRole includes unspecified_object (fallback token)",
+      "assertion": "registry.enums.objectRole.values.includes('unspecified_object')"
+    },
+    {
+      "id": "NE-024",
+      "description": "contextRole includes unspecified_context (fallback token)",
+      "assertion": "registry.enums.contextRole.values.includes('unspecified_context')"
+    },
+    {
+      "id": "NE-025",
+      "description": "action includes challenged_authority (only permitted compound token)",
+      "assertion": "registry.enums.action.values.includes('challenged_authority')"
+    },
+    {
+      "id": "NE-026",
+      "description": "action includes all 7 was_* passive tokens",
+      "assertion": "['was_removed','was_ejected','was_designated','was_waived','was_signed','was_traded','was_released'].every(v => registry.enums.action.values.includes(v))"
+    },
+    {
+      "id": "NE-027",
+      "description": "objectRole nullPermitted is true",
+      "assertion": "registry.enums.objectRole.nullPermitted === true"
+    },
+    {
+      "id": "NE-028",
+      "description": "contextRole nullPermitted is true",
+      "assertion": "registry.enums.contextRole.nullPermitted === true"
+    },
+    {
+      "id": "NE-029",
+      "description": "actorRole nullPermitted is false",
+      "assertion": "registry.enums.actorRole.nullPermitted === false"
+    },
+    {
+      "id": "NE-030",
+      "description": "action nullPermitted is false",
+      "assertion": "registry.enums.action.nullPermitted === false"
+    },
+    {
+      "id": "NE-031",
+      "description": "ncaSubclass nullPermitted is false",
+      "assertion": "registry.enums.ncaSubclass.nullPermitted === false"
+    },
+    {
+      "id": "NE-032",
+      "description": "ncaSubclass contains all 6 canonical subclass values",
+      "assertion": "['narrative_singularity','crowd_event','ritual_moment','anecdotal_beat','procedural_curiosity','conflict_flashpoint'].every(v => registry.enums.ncaSubclass.values.includes(v))"
+    },
+    {
+      "id": "NE-033",
+      "description": "timeBucketRegistry Tier B format is YYYY_WXX",
+      "assertion": "registry.timeBucketRegistry.tierB.format === 'YYYY_WXX'"
+    },
+    {
+      "id": "NE-034",
+      "description": "timeBucketRegistry Tier B unknownWeekMarker is W00",
+      "assertion": "registry.timeBucketRegistry.tierB.unknownWeekMarker === 'W00'"
+    },
+    {
+      "id": "NE-035",
+      "description": "Namespace collision: no narrative actorRole token appears in pressure registry signal_class",
+      "note": "Requires pressure registry to be loaded for cross-registry check",
+      "assertion": "No overlap between registry.enums.actorRole.values and pressureRegistry.enums.signal_class.values"
+    },
+    {
+      "id": "NE-036",
+      "description": "actorRole ontologicalLevels PERSON count is 22",
+      "assertion": "registry.enums.actorRole.ontologicalLevels.PERSON.length === 22"
+    },
+    {
+      "id": "NE-037",
+      "description": "actorRole ontologicalLevels UNIT count is 6",
+      "assertion": "registry.enums.actorRole.ontologicalLevels.UNIT.length === 6"
+    },
+    {
+      "id": "NE-038",
+      "description": "actorRole ontologicalLevels ORG count is 3",
+      "assertion": "registry.enums.actorRole.ontologicalLevels.ORG.length === 3"
+    },
+    {
+      "id": "NE-039",
+      "description": "actorRole ontologicalLevels ABSTRACT count is 1 (unspecified_actor only)",
+      "assertion": "registry.enums.actorRole.ontologicalLevels.ABSTRACT.length === 1"
+    },
+    {
+      "id": "NE-040",
+      "description": "Sum of ontologicalLevels token counts equals total actorRole values length",
+      "assertion": "PERSON.length + UNIT.length + ORG.length + ABSTRACT.length === actorRole.values.length"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rec.schema.json",
+  "title": "RawExtractionCandidateV1",
+  "description": "Pre-canonical extraction artifact. Untyped text unit extracted from source material. May be composite. Never typed. Never routed. Never canonicalized.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "text", "isComposite", "schemaVersion"],
+  "$comment": "REC_FINGERPRINT (design decision — not contract-specified):\nNormalization norm(x): trim → lowercase → collapse whitespace to _ → remove disallowed punctuation → null = empty\nConcatenation: REC-1.0 | text_norm\nHash: SHA-256 → lowercase hex\nID format: REC_<sha256hex>\n\nNOTE: sourceReference is NOT a REC field. Per GLOBAL-SPLIT-DOCTRINE.md,\nsourceReference is carried by AU, not REC.\n\nNOTE: REC ID format is a design decision. The DETERMINISTIC-GLOBAL-IDENTITY-FRAMEWORK\ngoverns canonical objects only. REC is pre-canonical. Hash-derived IDs chosen\nfor replay determinism consistency.",
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "REC-1.0"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^REC_[a-f0-9]{64}$",
+      "description": "Content-derived ID. REC_<sha256hex> of normalized text content."
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Raw extracted text. May be composite. Unchanged from source. No rewriting."
+    },
+    "isComposite": {
+      "type": "boolean",
+      "description": "True if atomicity enforcement detected multiple ontological components. Composite RECs must produce sibling AUs and a PCR before any seed typing."
+    }
+  }
+}

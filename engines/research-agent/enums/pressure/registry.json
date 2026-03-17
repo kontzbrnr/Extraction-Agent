@@ -1,0 +1,84 @@
+{
+  "registryId": "PRESSURE_ENUM_REGISTRY_V1",
+  "version": "ENUM_v1.0",
+  "lane": "pressure",
+  "enums": {
+    "signal_class": [
+      "ambient_framing",
+      "observed_behavior",
+      "procedural_change",
+      "environmental_cue",
+      "structural_condition",
+      "transactional_event"
+    ],
+    "environment": [
+      "organization",
+      "locker_room",
+      "practice",
+      "stadium",
+      "team_travel",
+      "league",
+      "medical",
+      "draft_room",
+      "front_office"
+    ],
+    "pressure_signal_domain": [
+      "structural_configuration",
+      "authority_distribution",
+      "control_autonomy",
+      "standards_evaluation",
+      "culture_cohesion",
+      "preparation_installation",
+      "timing_horizon",
+      "resource_allocation",
+      "redundancy_fragility",
+      "access_information",
+      "public_legibility",
+      "environmental_constraint",
+      "availability_status",
+      "compliance_regulation"
+    ],
+    "pressure_vector": [
+      "visibility",
+      "evaluation",
+      "expectation",
+      "exposure",
+      "volatility",
+      "constraint",
+      "reliability",
+      "authority",
+      "compliance",
+      "availability"
+    ],
+    "signal_polarity": [
+      "positive",
+      "negative",
+      "ambiguous",
+      "compressive",
+      "expansive",
+      "neutral"
+    ],
+    "observation_source": [
+      "user_provided",
+      "internal_observer",
+      "environmental",
+      "official_record",
+      "league_record",
+      "media_record",
+      "transaction_log",
+      "medical_report"
+    ],
+    "cast_requirement": [
+      "individual_player",
+      "position_group",
+      "coach",
+      "front_office",
+      "ownership",
+      "franchise",
+      "league",
+      "group",
+      "unspecified"
+    ],
+    "tier": [1, 2, 3]
+  }
+}

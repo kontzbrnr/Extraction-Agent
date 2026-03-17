@@ -1,0 +1,42 @@
+[
+  {
+    "test": "COMPLETENESS TEST",
+    "description": "Confirm all required enum keys from version.json exist in registry.json.",
+    "expectedResult": "pass"
+  },
+  {
+    "test": "VALUE COUNT TEST",
+    "description": "Confirm exact enum value counts for all eight enums.",
+    "expectedResult": "pass"
+  },
+  {
+    "test": "SNAKE_CASE TEST",
+    "description": "Validate all string enum values (excluding tier) match /^[a-z][a-z0-9_]*$/.",
+    "expectedResult": "pass"
+  },
+  {
+    "test": "UNIQUENESS TEST (intra-enum)",
+    "description": "Ensure each enum array has no duplicate values.",
+    "expectedResult": "pass"
+  },
+  {
+    "test": "TIER INTEGER TYPE TEST",
+    "description": "Ensure all tier values are integers, not strings.",
+    "expectedResult": "pass"
+  },
+  {
+    "test": "NAMESPACE COLLISION TEST (cross-lane isolation)",
+    "description": "Ensure no top-level enum key name collisions with narrative registry; create narrative stub if absent.",
+    "expectedResult": "pass"
+  },
+  {
+    "test": "LANE FIELD TEST",
+    "description": "Ensure lane is 'pressure' in both registry.json and version.json.",
+    "expectedResult": "pass"
+  },
+  {
+    "test": "REGISTRY ID CONSISTENCY TEST",
+    "description": "Ensure registryId values match each other and PRESSURE_ENUM_REGISTRY_V1.",
+    "expectedResult": "pass"
+  }
+]

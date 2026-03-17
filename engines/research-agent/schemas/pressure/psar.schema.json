@@ -1,0 +1,111 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pressure Signal Audit Record (PSAR_v1.0)",
+  "description": "2A assembler output. Pre-critic. Pre-canonical. Structural cluster proposal awaiting PSCA evaluation. Contract authority: PRESSURE-SIGNAL-AUDIT-RECORD.md v1.0, Structural Assembler Contract v1.1.",
+  "type": "object",
+  "required": [
+    "proposalID",
+    "auditSchemaVersion",
+    "enumRegistryVersion",
+    "agentVersionSnapshot",
+    "actorGroup",
+    "actionType",
+    "objectRole",
+    "domainSet",
+    "clusterSignature",
+    "structuralSourceIDs",
+    "clusterSize",
+    "domainDiversityCount",
+    "enumComplianceFlags"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "proposalID": {
+      "type": "string",
+      "pattern": "^PROP_[A-Za-z0-9]+_[A-Za-z0-9]+_\\d{3}_\\d{4}$",
+      "description": "Cycle-scoped sequential cluster proposal ID. Format: PROP_{season}_{phase}_{week:03d}_{ordinal:04d}. Not a canonical CPS ID."
+    },
+    "auditSchemaVersion": {
+      "type": "string",
+      "const": "PSAR_v1.0",
+      "description": "PSAR schema version. Pinned. Must equal PSAR_v1.0."
+    },
+    "enumRegistryVersion": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Pressure enum registry version active at assembly time."
+    },
+    "agentVersionSnapshot": {
+      "type": "object",
+      "required": ["ploEVersion", "assembler2AVersion", "pscaVersion"],
+      "additionalProperties": false,
+      "properties": {
+        "ploEVersion":      { "type": "string", "minLength": 1 },
+        "assembler2AVersion": { "type": "string", "minLength": 1 },
+        "pscaVersion":      { "type": "string", "minLength": 1 }
+      },
+      "description": "Agent version identifiers at time of assembly."
+    },
+    "actorGroup": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Normalized cast_requirement enum token. Membership enforced by psar_validator.py, not here."
+    },
+    "actionType": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Normalized snake_case action string. No registry. PSAR-intermediate field only."
+    },
+    "objectRole": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Normalized snake_case object string. No registry. PSAR-intermediate field only."
+    },
+    "domainSet": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Sorted, deduplicated list of normalized pressure_signal_domain tokens. Sort order and membership enforced by psar_validator.py."
+    },
+    "clusterSignature": {
+      "type": "string",
+      "pattern": "^SIG_[a-f0-9]{64}$",
+      "description": "Full SHA-256 content-derived cluster signature. Not a canonical ID."
+    },
+    "structuralSourceIDs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Sorted, deduplicated PLO-2.0 ploIDs that contributed to this cluster."
+    },
+    "clusterSize": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Count of unique structuralSourceIDs. Must equal len(structuralSourceIDs). Enforced by psar_validator.py."
+    },
+    "domainDiversityCount": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Count of unique domains in domainSet. Must equal len(domainSet). Enforced by psar_validator.py."
+    },
+    "enumComplianceFlags": {
+      "type": "object",
+      "required": [
+        "actorGroupResolved",
+        "actionTypeResolved",
+        "objectRoleResolved",
+        "domainSetResolved",
+        "registryVersionMatched"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "actorGroupResolved":     { "type": "boolean" },
+        "actionTypeResolved":     { "type": "boolean" },
+        "objectRoleResolved":     { "type": "boolean" },
+        "domainSetResolved":      { "type": "boolean" },
+        "registryVersionMatched": { "type": "boolean" }
+      },
+      "description": "Per-field normalization resolution flags. All must be true in a valid PSAR."
+    }
+  }
+}

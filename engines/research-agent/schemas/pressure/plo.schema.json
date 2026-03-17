@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Pressure-Legible Observation (PLO-1.0)",
+  "description": "PLO-E output. Pre-2A. Pre-critic. Pre-canonical. No enum fields. No canonical ID. No time fields. Contract authority: PLO-E v2 PDF §V, §VIII; PRESSURE-LEGIBLE-OBSERVATION-EXPANSION-AGENT.md v2.0 §V.",
+  "type": "object",
+  "required": ["sourceSeedId", "sourceSeedText", "schemaVersion", "observations"],
+  "additionalProperties": false,
+  "properties": {
+    "sourceSeedId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ID of the originating Atomic Unit. Passed through from PLO-E input. Not a canonical ID."
+    },
+    "sourceSeedText": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Text of the originating Atomic Unit. The neutral structural descriptor."
+    },
+    "schemaVersion": {
+      "type": "string",
+      "const": "PLO-1.0",
+      "description": "PLO schema version — pinned. Must equal PLO-1.0."
+    },
+    "observations": {
+      "type": "array",
+      "description": "Domain-specific observations. 4–10 items. All domains must be distinct. Domain membership and uniqueness enforced in plo_validator.py (not expressible in JSON Schema draft-07).",
+      "minItems": 4,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "required": ["domain", "observation"],
+        "additionalProperties": false,
+        "properties": {
+          "domain": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Perceptual domain label. Must be a member of VALID_DOMAINS in plo_schema.py."
+          },
+          "observation": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Neutral declarative observation string. No causality. No inference. No tension naming."
+          }
+        }
+      }
+    }
+  }
+}

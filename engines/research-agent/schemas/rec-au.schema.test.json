@@ -1,0 +1,189 @@
+[
+  {
+    "case": "Valid composite REC",
+    "schema": "rec",
+    "input": {
+      "schemaVersion": "REC-1.0",
+      "id": "REC_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "text": "Coach fired OC and promoted QB coach.",
+      "isComposite": true
+    },
+    "expectedResult": "pass"
+  },
+  {
+    "case": "Valid non-composite REC",
+    "schema": "rec",
+    "input": {
+      "schemaVersion": "REC-1.0",
+      "id": "REC_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "text": "Head coach announced a quarterback change.",
+      "isComposite": false
+    },
+    "expectedResult": "pass"
+  },
+  {
+    "case": "REC with isComposite wrong type",
+    "schema": "rec",
+    "input": {
+      "schemaVersion": "REC-1.0",
+      "id": "REC_cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "text": "Analysts described the defense as undisciplined.",
+      "isComposite": "yes"
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "REC with missing text",
+    "schema": "rec",
+    "input": {
+      "schemaVersion": "REC-1.0",
+      "id": "REC_dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "isComposite": false
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "REC with extra lane field",
+    "schema": "rec",
+    "input": {
+      "schemaVersion": "REC-1.0",
+      "id": "REC_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "text": "The franchise described the quarterback as the future.",
+      "isComposite": false,
+      "lane": "pressure"
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "REC id wrong pattern",
+    "schema": "rec",
+    "input": {
+      "schemaVersion": "REC-1.0",
+      "id": "REC_abc",
+      "text": "Coach announced changes.",
+      "isComposite": false
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "Valid PCR splitCount 3",
+    "schema": "pcr",
+    "input": {
+      "schemaVersion": "PCR-1.0",
+      "parentSourceId": "REC_ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "originalText": "Coach fired OC and promoted QB coach.",
+      "splitCount": 3
+    },
+    "expectedResult": "pass"
+  },
+  {
+    "case": "PCR splitCount 1 fails",
+    "schema": "pcr",
+    "input": {
+      "schemaVersion": "PCR-1.0",
+      "parentSourceId": "REC_1111111111111111111111111111111111111111111111111111111111111111",
+      "originalText": "Coach fired OC and promoted QB coach.",
+      "splitCount": 1
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "PCR missing originalText",
+    "schema": "pcr",
+    "input": {
+      "schemaVersion": "PCR-1.0",
+      "parentSourceId": "REC_2222222222222222222222222222222222222222222222222222222222222222",
+      "splitCount": 2
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "PCR parentSourceId wrong pattern",
+    "schema": "pcr",
+    "input": {
+      "schemaVersion": "PCR-1.0",
+      "parentSourceId": "AU_3333333333333333333333333333333333333333333333333333333333333333",
+      "originalText": "Composite statement.",
+      "splitCount": 2
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "Valid AU splitIndex 0",
+    "schema": "au",
+    "input": {
+      "schemaVersion": "AU-1.0",
+      "id": "AU_4444444444444444444444444444444444444444444444444444444444444444",
+      "text": "Head coach announced a quarterback change.",
+      "parentSourceID": "REC_5555555555555555555555555555555555555555555555555555555555555555",
+      "sourceReference": "doc:abc123#p4l22",
+      "splitIndex": 0
+    },
+    "expectedResult": "pass"
+  },
+  {
+    "case": "AU splitIndex -1 fails",
+    "schema": "au",
+    "input": {
+      "schemaVersion": "AU-1.0",
+      "id": "AU_6666666666666666666666666666666666666666666666666666666666666666",
+      "text": "Head coach announced a quarterback change.",
+      "parentSourceID": "REC_7777777777777777777777777777777777777777777777777777777777777777",
+      "sourceReference": "doc:abc123#p4l22",
+      "splitIndex": -1
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "AU missing sourceReference",
+    "schema": "au",
+    "input": {
+      "schemaVersion": "AU-1.0",
+      "id": "AU_8888888888888888888888888888888888888888888888888888888888888888",
+      "text": "Head coach announced a quarterback change.",
+      "parentSourceID": "REC_9999999999999999999999999999999999999999999999999999999999999999",
+      "splitIndex": 0
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "AU with extra seedType fails",
+    "schema": "au",
+    "input": {
+      "schemaVersion": "AU-1.0",
+      "id": "AU_abababababababababababababababababababababababababababababababab",
+      "text": "Head coach announced a quarterback change.",
+      "parentSourceID": "REC_cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+      "sourceReference": "doc:abc123#p4l22",
+      "splitIndex": 0,
+      "seedType": "pressure"
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "AU parentSourceID referencing REC pattern passes",
+    "schema": "au",
+    "input": {
+      "schemaVersion": "AU-1.0",
+      "id": "AU_1212121212121212121212121212121212121212121212121212121212121212",
+      "text": "Analysts described the defense as undisciplined.",
+      "parentSourceID": "REC_3434343434343434343434343434343434343434343434343434343434343434",
+      "sourceReference": "cluster:week3:doc7",
+      "splitIndex": 1
+    },
+    "expectedResult": "pass"
+  },
+  {
+    "case": "AU id wrong pattern fails",
+    "schema": "au",
+    "input": {
+      "schemaVersion": "AU-1.0",
+      "id": "AU_abc",
+      "text": "Analysts described the defense as undisciplined.",
+      "parentSourceID": "REC_5656565656565656565656565656565656565656565656565656565656565656",
+      "sourceReference": "cluster:week3:doc7",
+      "splitIndex": 0
+    },
+    "expectedResult": "fail"
+  }
+]

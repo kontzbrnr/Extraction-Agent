@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+*.log
+
+.claude/
+runs/
+phase6_snapshot_*/
+phase6_checkpoints/
+
+.DS_Store

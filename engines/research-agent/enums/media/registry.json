@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "registryId": "MEDIA_ENUM_REGISTRY_V1",
+  "version": "ENUM_v1.1",
+  "lane": "media",
+  "schemaVersion": "MEDIA_ENUM_REGISTRY-1.0",
+  "lockedAt": "ENUM_v1.1",
+  "openItems": {
+    "actorRoleGovernance": "CME schema contains actorRole, action, objectRole, contextRole fields. No contract assigns these to MEDIA_ENUM_REGISTRY_V1 or EVENT_ENUM_REGISTRY_V1. Governance gap. Requires future contract authorship before these fields can be enum-locked in the media lane.",
+    "mfuEnums": "targetClass, polarity, and confidenceLevel from MEDIA-FRAMING-AUDIT-AGENT.md remain deferred. MFU canonical schema not yet defined. Out of scope until contract authorship."
+  },
+  "enums": {
+    "subtype": {
+      "description": "Descriptive taxonomy tag for CME objects. Assigned by META. Exactly one per CME. Rule-based and deterministic. Participates in CME_FINGERPRINT_V1 as field 5 (subtype_norm).",
+      "fingerprintParticipation": true,
+      "nullPermitted": false,
+      "governanceNote": "No hybrid tagging allowed. Exactly one subtype per CME. 'other' requires explicit justification in eventDescription. Subtype does not imply importance, structural mutation magnitude, arc relevance, or creative weight. Locked in MEDIA-EVENT-TRANSFORMER-AGENT.md Section V and MEDIA-EVENT-TRANSFORMER-AGENT(META).md Section V.",
+      "assignmentExamples": {
+        "structural": "Coach fired",
+        "transactional": "Player traded",
+        "disciplinary": "Player suspended",
+        "award": "Player wins MVP",
+        "record": "Player breaks franchise record",
+        "administrative": "League rule change",
+        "contractual": "Player signs contract extension",
+        "medical": "Player activated from IR",
+        "competitive_result": "Team wins division",
+        "retirement": "Player retires",
+        "reinstatement": "Player reinstated after suspension",
+        "other": "Event does not fit any other subtype — requires justification"
+      },
+      "values": [
+        "structural",
+        "transactional",
+        "disciplinary",
+        "award",
+        "record",
+        "administrative",
+        "contractual",
+        "medical",
+        "competitive_result",
+        "retirement",
+        "reinstatement",
+        "other"
+      ]
+    },
+    "framingType": {
+      "description": "Classification of the rhetorical or discourse function of a media framing unit. Assigned during MFU extraction. Exactly one per MFU. Rule-based and deterministic.",
+      "fingerprintParticipation": false,
+      "nullPermitted": false,
+      "governanceNote": "Values sourced from MEDIA-FRAMING-AUDIT-AGENT.md §Proposed Classification Notes. Does not participate in any fingerprint authority. MFU canonical schema is deferred — fingerprintParticipation will be reassessed at that time.",
+      "values": [
+        "label",
+        "reputation",
+        "destiny",
+        "skepticism",
+        "speculation",
+        "moralizing",
+        "other"
+      ]
+    }
+  }
+}

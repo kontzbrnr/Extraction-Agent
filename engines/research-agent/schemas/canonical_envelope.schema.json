@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Canonical Envelope",
+  "description": "The canonical object envelope for the deterministic canonical object pipeline",
+  "type": "object",
+  "required": [
+    "laneType",
+    "schemaVersion",
+    "enumVersion",
+    "contractVersion"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "laneType": {
+      "type": "string",
+      "enum": [
+        "PRESSURE",
+        "NARRATIVE",
+        "MEDIA"
+      ],
+      "description": "The lane type — must be one of PRESSURE, NARRATIVE, or MEDIA"
+    },
+    "schemaVersion": {
+      "type": "string",
+      "description": "The schema version identifier"
+    },
+    "enumVersion": {
+      "type": "string",
+      "description": "The enum version identifier"
+    },
+    "contractVersion": {
+      "type": "string",
+      "description": "The contract version identifier"
+    },
+    "fingerprintVersion": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Optional fingerprint version — can be a string or null, owned by PSTA"
+    }
+  }
+}

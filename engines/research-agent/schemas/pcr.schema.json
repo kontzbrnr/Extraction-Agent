@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "pcr.schema.json",
+  "title": "ParentCompositeRecordV1",
+  "description": "Audit artifact. Retained when a composite REC is split into sibling AUs. Never typed. Never routed. Exists for audit and replay traceability only.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["parentSourceId", "originalText", "splitCount", "schemaVersion"],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "PCR-1.0"
+    },
+    "parentSourceId": {
+      "type": "string",
+      "pattern": "^REC_[a-f0-9]{64}$",
+      "description": "ID of the composite REC that was split. Must reference a valid REC id."
+    },
+    "originalText": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unchanged composite text from the original REC. No mutation. No trimming."
+    },
+    "splitCount": {
+      "type": "integer",
+      "minimum": 2,
+      "description": "Number of sibling AUs produced. Minimum 2 — a splitCount of 1 is not a composite split. Set at atomicity enforcement time."
+    }
+  }
+}

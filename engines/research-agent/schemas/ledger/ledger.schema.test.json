@@ -1,0 +1,283 @@
+[
+  {
+    "case": "Valid global state operational",
+    "schema": "global_state",
+    "input": {
+      "schemaVersion": "GLOBAL_STATE-1.0",
+      "activeSeason": "2024_OFFSEASON",
+      "activeRunPath": "runs/2024_OFFSEASON/",
+      "systemStatus": "operational"
+    },
+    "expectedResult": "pass"
+  },
+  {
+    "case": "globalState with invalid systemStatus",
+    "schema": "global_state",
+    "input": {
+      "schemaVersion": "GLOBAL_STATE-1.0",
+      "activeSeason": "2024_OFFSEASON",
+      "activeRunPath": "runs/2024_OFFSEASON/",
+      "systemStatus": "active"
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "globalState missing activeSeason",
+    "schema": "global_state",
+    "input": {
+      "schemaVersion": "GLOBAL_STATE-1.0",
+      "activeRunPath": "runs/2024_OFFSEASON/",
+      "systemStatus": "operational"
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "globalState with extra debugMode",
+    "schema": "global_state",
+    "input": {
+      "schemaVersion": "GLOBAL_STATE-1.0",
+      "activeSeason": "2024_OFFSEASON",
+      "activeRunPath": "runs/2024_OFFSEASON/",
+      "systemStatus": "operational",
+      "debugMode": true
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "Valid season state running",
+    "schema": "season_state",
+    "input": {
+      "schemaVersion": "SEASON_STATE-1.0",
+      "season": "2024_OFFSEASON",
+      "terminationStatus": "running",
+      "microBatchCount": 0,
+      "auditCycleCount": 0,
+      "retryFailureCount": 0,
+      "incompleteBatchFlag": false,
+      "activeBatchId": "BATCH_2024_OFFSEASON_0000",
+      "commitState": "idle",
+      "subcategoryCounts": {
+        "surface_a": 1
+      },
+      "exhaustionCounters": {
+        "surface_a": 0
+      },
+      "lastUpdated": "2026-03-02T12:00:00Z"
+    },
+    "expectedResult": "pass"
+  },
+  {
+    "case": "seasonState invalid terminationStatus",
+    "schema": "season_state",
+    "input": {
+      "schemaVersion": "SEASON_STATE-1.0",
+      "season": "2024_OFFSEASON",
+      "terminationStatus": "complete",
+      "microBatchCount": 0,
+      "auditCycleCount": 0,
+      "retryFailureCount": 0,
+      "incompleteBatchFlag": false,
+      "activeBatchId": "BATCH_2024_OFFSEASON_0000",
+      "commitState": "idle",
+      "subcategoryCounts": {},
+      "exhaustionCounters": {},
+      "lastUpdated": "2026-03-02T12:00:00Z"
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "seasonState microBatchCount negative",
+    "schema": "season_state",
+    "input": {
+      "schemaVersion": "SEASON_STATE-1.0",
+      "season": "2024_OFFSEASON",
+      "terminationStatus": "running",
+      "microBatchCount": -1,
+      "auditCycleCount": 0,
+      "retryFailureCount": 0,
+      "incompleteBatchFlag": false,
+      "activeBatchId": "BATCH_2024_OFFSEASON_0000",
+      "commitState": "idle",
+      "subcategoryCounts": {},
+      "exhaustionCounters": {},
+      "lastUpdated": "2026-03-02T12:00:00Z"
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "seasonState activeBatchId null idle",
+    "schema": "season_state",
+    "input": {
+      "schemaVersion": "SEASON_STATE-1.0",
+      "season": "2024_OFFSEASON",
+      "terminationStatus": "running",
+      "microBatchCount": 1,
+      "auditCycleCount": 0,
+      "retryFailureCount": 0,
+      "incompleteBatchFlag": false,
+      "activeBatchId": null,
+      "commitState": "committed",
+      "subcategoryCounts": {},
+      "exhaustionCounters": {},
+      "lastUpdated": "2026-03-02T12:10:00Z"
+    },
+    "expectedResult": "pass"
+  },
+  {
+    "case": "seasonState crash state flag true batch id null",
+    "schema": "season_state",
+    "input": {
+      "schemaVersion": "SEASON_STATE-1.0",
+      "season": "2024_OFFSEASON",
+      "terminationStatus": "running",
+      "microBatchCount": 1,
+      "auditCycleCount": 0,
+      "retryFailureCount": 1,
+      "incompleteBatchFlag": true,
+      "activeBatchId": null,
+      "commitState": "failed",
+      "subcategoryCounts": {},
+      "exhaustionCounters": {},
+      "lastUpdated": "2026-03-02T12:11:00Z"
+    },
+    "expectedResult": "pass"
+  },
+  {
+    "case": "seasonState missing incompleteBatchFlag",
+    "schema": "season_state",
+    "input": {
+      "schemaVersion": "SEASON_STATE-1.0",
+      "season": "2024_OFFSEASON",
+      "terminationStatus": "running",
+      "microBatchCount": 1,
+      "auditCycleCount": 0,
+      "retryFailureCount": 0,
+      "activeBatchId": null,
+      "commitState": "idle",
+      "subcategoryCounts": {},
+      "exhaustionCounters": {},
+      "lastUpdated": "2026-03-02T12:10:00Z"
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "seasonState invalid commitState pending",
+    "schema": "season_state",
+    "input": {
+      "schemaVersion": "SEASON_STATE-1.0",
+      "season": "2024_OFFSEASON",
+      "terminationStatus": "running",
+      "microBatchCount": 1,
+      "auditCycleCount": 0,
+      "retryFailureCount": 0,
+      "incompleteBatchFlag": false,
+      "activeBatchId": null,
+      "commitState": "pending",
+      "subcategoryCounts": {},
+      "exhaustionCounters": {},
+      "lastUpdated": "2026-03-02T12:10:00Z"
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "Valid canonical registry all lanes empty",
+    "schema": "canonical_objects",
+    "input": {
+      "schemaVersion": "CANONICAL_REGISTRY-1.0",
+      "CPS": [],
+      "CME": [],
+      "CSN": [],
+      "StructuralEnvironment": [],
+      "MediaContext": []
+    },
+    "expectedResult": "pass"
+  },
+  {
+    "case": "Registry with extra lane key Pressure",
+    "schema": "canonical_objects",
+    "input": {
+      "schemaVersion": "CANONICAL_REGISTRY-1.0",
+      "CPS": [],
+      "CME": [],
+      "CSN": [],
+      "StructuralEnvironment": [],
+      "MediaContext": [],
+      "Pressure": []
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "Registry missing MediaContext",
+    "schema": "canonical_objects",
+    "input": {
+      "schemaVersion": "CANONICAL_REGISTRY-1.0",
+      "CPS": [],
+      "CME": [],
+      "CSN": [],
+      "StructuralEnvironment": []
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "Valid cycle log with two entries and null week",
+    "schema": "cycle_log",
+    "input": {
+      "schemaVersion": "CYCLE_LOG-1.0",
+      "entries": [
+        {
+          "canonicalId": "CPS_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "cycleId": "2025_OFFSEASON_CYCLE_01",
+          "season": "2025",
+          "phase": "OFFSEASON",
+          "week": null,
+          "observedAt": "2026-03-02T12:00:00Z"
+        },
+        {
+          "canonicalId": "CME_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "cycleId": "2025_REGULAR_SEASON_CYCLE_04",
+          "season": "2025",
+          "phase": "REGULAR_SEASON",
+          "week": "04",
+          "observedAt": "2026-03-02T12:01:00Z"
+        }
+      ]
+    },
+    "expectedResult": "pass"
+  },
+  {
+    "case": "Cycle log entry missing observedAt",
+    "schema": "cycle_log",
+    "input": {
+      "schemaVersion": "CYCLE_LOG-1.0",
+      "entries": [
+        {
+          "canonicalId": "CPS_cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+          "cycleId": "2025_OFFSEASON_CYCLE_02",
+          "season": "2025",
+          "phase": "OFFSEASON",
+          "week": null
+        }
+      ]
+    },
+    "expectedResult": "fail"
+  },
+  {
+    "case": "Cycle log entry with extra batchId",
+    "schema": "cycle_log",
+    "input": {
+      "schemaVersion": "CYCLE_LOG-1.0",
+      "entries": [
+        {
+          "canonicalId": "CSN_dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+          "cycleId": "2025_REGULAR_SEASON_CYCLE_05",
+          "season": "2025",
+          "phase": "REGULAR_SEASON",
+          "week": "05",
+          "observedAt": "2026-03-02T12:02:00Z",
+          "batchId": "BATCH_2025_REGULAR_0005"
+        }
+      ]
+    },
+    "expectedResult": "fail"
+  }
+]

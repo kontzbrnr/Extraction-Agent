@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Canonical Media Context Record",
+  "description": "Schema for a frozen canonical MCR object in the MediaContext registry lane.",
+  "type": "object",
+  "required": [
+    "id",
+    "laneType",
+    "schemaVersion",
+    "contextDescription",
+    "framingType",
+    "sourceSeedID",
+    "fingerprintVersion",
+    "contractVersion",
+    "enumRegistryVersion"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "id":                  { "type": "string", "pattern": "^MCR_[a-f0-9]{64}$" },
+    "laneType":            { "type": "string", "enum": ["MEDIA"] },
+    "schemaVersion":       { "type": "string" },
+    "contextDescription":  { "type": "string", "minLength": 1 },
+    "framingType":         { "type": "string", "minLength": 1 },
+    "sourceType":          { "type": ["string", "null"] },
+    "timeMarker":          { "type": ["string", "null"] },
+    "sourceSeedID":        { "type": "string", "minLength": 1 },
+    "fingerprintVersion":  { "type": "string" },
+    "contractVersion":     { "type": "string" },
+    "enumRegistryVersion": { "type": "string" }
+  }
+}

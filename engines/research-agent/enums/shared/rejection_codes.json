@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "registryId": "REJECTION_CODE_REGISTRY_V1",
+  "version": "v1.0",
+  "scope": "global",
+  "governanceNote": "All rejection codes are SCREAMING_SNAKE_CASE. Globally unique across namespaces. Codes are emitted by agents and consumed by PQG for metrics. No free-text rejection permitted system-wide.",
+  "conflictLog": {
+    "PSAR_v1.0_vs_PSCA_v2.0": {
+      "description": "PRESSURE-SIGNAL-AUDIT-RECORD.md v1.0 Section X lists PSCA codes under the label 'from PSCA contract' but uses names that do not match PRESSURE-SIGNAL-CRITIC-AGENT.md v2.0 Section V. PSCA v2.0 is authoritative. PSAR v1.0 names are recorded below as legacyAlias for traceability.",
+      "aliases": {
+        "REJECT_INTENTIONAL_THEATER": "REJECT_INTENTIONALITY",
+        "REJECT_NARRATIVE_COMPLETE": "REJECT_NARRATIVE_SATURATION",
+        "COLLAPSE_FRAGMENTED_STAGED_UNIT": "COLLAPSE_FRAGMENTATION",
+        "REJECT_MEANING_LEAKAGE": "REJECT_EXPLICIT_MEANING",
+        "RECLASSIFY_OVERWEIGHT_SIGNAL": "RECLASSIFY_OVERWEIGHT_SIGNAL_MEDIA_EVENT"
+      },
+      "unmappedPSARCodes": {
+        "REJECT_NON_ACCIDENTAL_EMERGENCE": "Present in PSAR v1.0 only. No corresponding check in PSCA v2.0. Likely a PSCA v1.0 code removed or merged in v2.0 upgrade. Retained for audit completeness.",
+        "REJECT_MISCLASSIFIED_OVERWEIGHT": "Present in PSAR v1.0 only. No corresponding check in PSCA v2.0. Likely a PSCA v1.0 code removed or renamed. Retained for audit completeness."
+      }
+    }
+  },
+  "namespaces": {
+    "CIV": {
+      "description": "Canonical Integrity Validator rejection codes. Emitted post-canonicalization, pre-commit. One code per validation check. Source: CANONICAL-INTEGRITY-VALIDATOR.md v1.0 Section V.",
+      "contractSource": "CANONICAL-INTEGRITY-VALIDATOR.md v1.0",
+      "codes": {
+        "REJECT_SCHEMA_INCOMPLETE": {
+          "check": "Schema Completeness (CIV Section III.1)",
+          "description": "Required fields missing, unknown fields present, or missing enum fields."
+        },
+        "REJECT_ENUM_INVALID": {
+          "check": "Enum Registry Compliance (CIV Section III.2)",
+          "description": "Enum field value not present in Canonical Enum Registry or does not match enumVersion snapshot."
+        },
+        "REJECT_IDENTITY_CONTAMINATION": {
+          "check": "Identity Abstraction Integrity (CIV Section III.3)",
+          "description": "Proper noun, unabstracted named entity, or literal name found in structural fields.",
+          "sharedWith": ["IDENTITY-ABSTRACTION-ENFORCEMENT-CONTRACT.md"]
+        },
+        "REJECT_TIME_SHAPE_INVALID": {
+          "check": "Time Binding Compliance (CIV Section III.4)",
+          "description": "timestampContext missing, malformed, or contains illegal fields. season absent or phase enum invalid."
+        },
+        "REJECT_ID_HASH_MISMATCH": {
+          "check": "ID Integrity Check (CIV Section III.5)",
+          "description": "canonicalID does not match deterministic hash recipe. Structural identity key mismatch."
+        },
+        "REJECT_VERSION_MISMATCH": {
+          "check": "Version Snapshot Integrity (CIV Section III.6)",
+          "description": "schemaVersion, enumVersion, or contractVersion does not match orchestrator cycle snapshot."
+        },
+        "REJECT_LANE_FIELD_CONTAMINATION": {
+          "check": "Cross-Family Field Contamination (CIV Section III.7)",
+          "description": "Pressure object contains narrative fields (subclass, lifecycle metadata) or narrative object contains pressure fields (clusterSignature, structuralSourceIDs). Lane purity violated."
+        }
+      }
+    },
+    "PSCA": {
+      "description": "Pressure Signal Critic Agent verdict codes. Emitted during PSCA evaluation of PSAR proposals. Source: PRESSURE-SIGNAL-CRITIC-AGENT.md v2.0 Section V. PSCA v2.0 names are authoritative; see conflictLog for PSAR v1.0 aliases.",
+      "contractSource": "PRESSURE-SIGNAL-CRITIC-AGENT.md v2.0",
+      "criticStatusValues": ["PASS", "REJECT", "COLLAPSE", "RECLASSIFY"],
+      "codes": {
+        "PASS_ALL_CHECKS": {
+          "criticStatus": "PASS",
+          "check": "All PSCA checks passed",
+          "description": "Proposal passes all structural validity checks. Eligible for PSTA canonical mint."
+        },
+        "REJECT_INSUFFICIENT_CLUSTER_SIZE": {
+          "criticStatus": "REJECT",
+          "check": "Cluster Size Gate (PSCA Section V.1)",
+          "description": "clusterSize < MIN_CLUSTER_SIZE (2). Structurally insufficient cluster.",
+          "alsoInPSAR": true
+        },
+        "REJECT_INSUFFICIENT_DOMAIN_DIVERSITY": {
+          "criticStatus": "REJECT",
+          "check": "Domain Diversity Gate (PSCA Section V.2)",
+          "description": "domainDiversityCount < MIN_DOMAIN_DIVERSITY (2). Single-domain clusters are structurally insufficient.",
+          "alsoInPSAR": true
+        },
+        "REJECT_INTENTIONAL_THEATER": {
+          "criticStatus": "REJECT",
+          "check": "Intentionality Check (PSCA Section V.3)",
+          "description": "containsSymbolicStaging = true. Cluster contains intentional theatrical staging.",
+          "legacyAlias": "REJECT_INTENTIONALITY"
+        },
+        "REJECT_NARRATIVE_COMPLETE": {
+          "criticStatus": "REJECT",
+          "check": "Narrative Saturation Test (PSCA Section V.4)",
+          "description": "Cluster independently forms a complete story. Narrative saturation disqualifies pressure signal.",
+          "legacyAlias": "REJECT_NARRATIVE_SATURATION"
+        },
+        "COLLAPSE_FRAGMENTED_STAGED_UNIT": {
+          "criticStatus": "COLLAPSE",
+          "check": "Fragmentation Check (PSCA Section V.5)",
+          "description": "Signals are fragments of a unified staged act. Collapse directive issued.",
+          "legacyAlias": "COLLAPSE_FRAGMENTATION"
+        },
+        "REJECT_MEANING_LEAKAGE": {
+          "criticStatus": "REJECT",
+          "check": "Explicit Meaning Check (PSCA Section V.6)",
+          "description": "containsInterpretiveLanguage = true. Interpretive language present in pressure candidate.",
+          "legacyAlias": "REJECT_EXPLICIT_MEANING"
+        },
+        "RECLASSIFY_OVERWEIGHT_SIGNAL": {
+          "criticStatus": "RECLASSIFY",
+          "check": "Overweight Signal Check (PSCA Section V.7)",
+          "description": "containsOutcomeEncoding = true. Signal carries overweight narrative encoding; reclassify to media event or narrative environment.",
+          "legacyAlias": "RECLASSIFY_OVERWEIGHT_SIGNAL_MEDIA_EVENT"
+        }
+      },
+      "psarV1OnlyCodes": {
+        "REJECT_NON_ACCIDENTAL_EMERGENCE": {
+          "contractSource": "PRESSURE-SIGNAL-AUDIT-RECORD.md v1.0 Section X",
+          "description": "Present in PSAR v1.0 minimum required codes. No corresponding check in PSCA v2.0. Likely PSCA v1.0 remnant."
+        },
+        "REJECT_MISCLASSIFIED_OVERWEIGHT": {
+          "contractSource": "PRESSURE-SIGNAL-AUDIT-RECORD.md v1.0 Section X",
+          "description": "Present in PSAR v1.0 minimum required codes. No corresponding check in PSCA v2.0. Likely PSCA v1.0 remnant."
+        }
+      }
+    }
+  }
+}

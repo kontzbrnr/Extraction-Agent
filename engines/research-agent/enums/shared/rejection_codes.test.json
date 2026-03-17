@@ -1,0 +1,16 @@
+[
+  {"test": "RC-001: registryId === \"REJECTION_CODE_REGISTRY_V1\"", "expectedResult": "pass"},
+  {"test": "RC-002: version === \"v1.0\"", "expectedResult": "pass"},
+  {"test": "RC-003: CIV namespace contains exactly 7 codes", "expectedResult": "pass"},
+  {"test": "RC-004: All 7 CIV codes present: REJECT_SCHEMA_INCOMPLETE, REJECT_ENUM_INVALID, REJECT_IDENTITY_CONTAMINATION, REJECT_TIME_SHAPE_INVALID, REJECT_ID_HASH_MISMATCH, REJECT_VERSION_MISMATCH, REJECT_LANE_FIELD_CONTAMINATION", "expectedResult": "pass"},
+  {"test": "RC-005: PSCA namespace contains exactly 8 codes in codes object (PASS_ALL_CHECKS + 7 non-pass codes)", "expectedResult": "pass"},
+  {"test": "RC-006: All active code tokens (CIV codes + PSCA codes keys) are SCREAMING_SNAKE_CASE pattern: /^[A-Z][A-Z0-9_]*$/", "expectedResult": "pass"},
+  {"test": "RC-007: All active code tokens are globally unique across CIV and PSCA namespaces (no token appears in both)", "expectedResult": "pass"},
+  {"test": "RC-008: conflictLog present and non-empty (naming conflict documented)", "expectedResult": "pass"},
+  {"test": "RC-009: Each CIV code has a \"check\" field and \"description\" field", "expectedResult": "pass"},
+  {"test": "RC-010: Each PSCA codes entry has a \"criticStatus\" field", "expectedResult": "pass"},
+  {"test": "RC-011: REJECT_LANE_FIELD_CONTAMINATION present in CIV namespace (INV-4 enforcement code must be present)", "expectedResult": "pass"},
+  {"test": "RC-012: REJECT_ID_HASH_MISMATCH present in CIV namespace (INV-5 enforcement code must be present)", "expectedResult": "pass"},
+  {"test": "RC-013: PASS_ALL_CHECKS present in PSCA codes (success code must be registered alongside failure codes)", "expectedResult": "pass"},
+  {"test": "RC-014: psarV1OnlyCodes contains REJECT_NON_ACCIDENTAL_EMERGENCE and REJECT_MISCLASSIFIED_OVERWEIGHT (stale codes documented)", "expectedResult": "pass"}
+]

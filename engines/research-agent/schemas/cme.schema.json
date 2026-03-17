@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "cme.schema.json",
+  "title": "CanonicalMediaEventV1",
+  "description": "Canonical Media Event object. Governed by META v1.0. CME_FINGERPRINT_V1 defined below.",
+  "$comment": "CME_FINGERPRINT_V1 — Mint authority: META (MEDIA-EVENT-TRANSFORMER-AGENT.md)\n\nNormalization function norm(x):\n  1. trim whitespace\n  2. lowercase\n  3. collapse internal whitespace to single underscore\n  4. remove disallowed punctuation\n  5. null → empty token\n\nCanonical concatenation (exact field order):\n  CME-1.0 | actorRole_norm | action_norm | objectRole_norm | contextRole_norm |\n  subtype_norm | permanence_norm | sourceReference_norm\n\nHash: SHA-256 → lowercase hex\nID format: CME_<sha256hex>\n\nEXPLICIT EXCLUSIONS (do not add to fingerprint under any circumstance):\n  - timestampContext (present in schema; excluded from identity by contract)\n  - eventDescription (semantic drift risk)\n  - eventType (const; redundant with CME-1.0 prefix)\n  - fingerprintVersion (version metadata; never identity-bearing)\n  - id (self-referential)\n\nNOTE: permanence_norm always resolves to the token \"permanent\" (const field).\nIts presence in the fingerprint is intentional — provides archival namespace\nstability and mirrors the design of the CME persistence threshold declaration.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "eventType",
+    "actorRole",
+    "action",
+    "objectRole",
+    "contextRole",
+    "eventDescription",
+    "subtype",
+    "permanence",
+    "sourceReference",
+    "timestampContext"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^CME_[a-f0-9]{64}$",
+      "description": "Content-derived canonical ID. Format: CME_<sha256hex>. Minted by META only."
+    },
+    "eventType": {
+      "type": "string",
+      "const": "CME",
+      "description": "Fixed value. Lane discriminator."
+    },
+    "actorRole": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identity-abstracted role token. No proper nouns."
+    },
+    "action": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Normalized action verb."
+    },
+    "objectRole": {
+      "type": ["string", "null"],
+      "description": "Optional secondary role. Nullable."
+    },
+    "contextRole": {
+      "type": ["string", "null"],
+      "description": "Optional contextual actor. Nullable."
+    },
+    "eventDescription": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Neutral declarative summary. No causal language. No proper nouns."
+    },
+    "subtype": {
+      "type": "string",
+      "enum": [
+        "structural",
+        "transactional",
+        "disciplinary",
+        "award",
+        "record",
+        "administrative",
+        "contractual",
+        "medical",
+        "competitive_result",
+        "retirement",
+        "reinstatement",
+        "other"
+      ],
+      "description": "Descriptive taxonomy tag. Exactly one per CME. Rule-based assignment by META."
+    },
+    "permanence": {
+      "type": "string",
+      "const": "permanent",
+      "description": "Fixed value. All CME objects are permanently archived. Participates in CME_FINGERPRINT_V1."
+    },
+    "sourceReference": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Archival pointer string."
+    },
+    "timestampContext": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Season/week marker. Present in schema. EXCLUDED from CME_FINGERPRINT_V1."
+    },
+    "fingerprintVersion": {
+      "type": ["string", "null"],
+      "description": "Nullable placeholder. Future version tagging. Does not participate in ID derivation."
+    }
+  }
+}

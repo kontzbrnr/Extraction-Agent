@@ -1,0 +1,126 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Canonical Pressure Signal Object",
+  "description": "Canonical Pressure Signal object. Immutable post-mint. Time-neutral. Fingerprint-participating fields defined by CPS_FINGERPRINT_V1 in PSTA v4.",
+  "type": "object",
+  "required": [
+    "laneType",
+    "schemaVersion",
+    "signalClass",
+    "environment",
+    "pressureSignalDomain",
+    "pressureVector",
+    "signalPolarity",
+    "observationSource",
+    "castRequirement",
+    "tier",
+    "observation",
+    "sourceSeed",
+    "canonicalId",
+    "enumRegistryVersion",
+    "fingerprintVersion",
+    "contractVersion"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "laneType": {
+      "type": "string",
+      "const": "PRESSURE",
+      "description": "Lane type identifier — must be PRESSURE"
+    },
+    "schemaVersion": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Schema version — fingerprint-participating field"
+    },
+    "signalClass": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Signal class — fingerprint-participating field"
+    },
+    "environment": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Environment — fingerprint-participating field"
+    },
+    "pressureSignalDomain": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Pressure signal domain — fingerprint-participating field"
+    },
+    "pressureVector": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Pressure vector — fingerprint-participating field"
+    },
+    "signalPolarity": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Signal polarity — fingerprint-participating field"
+    },
+    "observationSource": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Observation source — fingerprint-participating field"
+    },
+    "castRequirement": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Cast requirement — fingerprint-participating field"
+    },
+    "tier": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "Tier level (1-3) — fingerprint-participating field"
+    },
+    "observation": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Observation string — fingerprint-participating field"
+    },
+    "sourceSeed": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Source seed title — fingerprint-participating field"
+    },
+    "canonicalId": {
+      "type": "string",
+      "pattern": "^CPS_[a-f0-9]{64}$",
+      "description": "Canonical pressure signal ID — content-derived SHA256 hash"
+    },
+    "enumRegistryVersion": {
+      "type": "string",
+      "description": "Enum registry version — immutable post-mint"
+    },
+    "fingerprintVersion": {
+      "type": "string",
+      "description": "Fingerprint version — immutable post-mint"
+    },
+    "contractVersion": {
+      "type": "string",
+      "description": "Contract version — immutable post-mint"
+    }
+  }
+}

@@ -1,0 +1,107 @@
+{
+  "cases": [
+    {
+      "name": "valid_cme_should_pass",
+      "shouldPass": true,
+      "object": {
+        "id": "CME_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "eventType": "CME",
+        "actorRole": "head_coach",
+        "action": "announced",
+        "objectRole": "starting_quarterback",
+        "contextRole": null,
+        "eventDescription": "A head coach announced a change to the starting quarterback.",
+        "subtype": "administrative",
+        "permanence": "permanent",
+        "sourceReference": "doc:abc123#p4l22",
+        "timestampContext": "season_2020_week_03",
+        "fingerprintVersion": null
+      }
+    },
+    {
+      "name": "invalid_subtype_should_fail",
+      "shouldPass": false,
+      "object": {
+        "id": "CME_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "eventType": "CME",
+        "actorRole": "head_coach",
+        "action": "announced",
+        "objectRole": "starting_quarterback",
+        "contextRole": null,
+        "eventDescription": "A head coach announced a change to the starting quarterback.",
+        "subtype": "fantasy_points",
+        "permanence": "permanent",
+        "sourceReference": "doc:abc123#p4l22",
+        "timestampContext": "season_2020_week_03"
+      }
+    },
+    {
+      "name": "invalid_permanence_should_fail",
+      "shouldPass": false,
+      "object": {
+        "id": "CME_cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "eventType": "CME",
+        "actorRole": "head_coach",
+        "action": "announced",
+        "objectRole": "starting_quarterback",
+        "contextRole": null,
+        "eventDescription": "A head coach announced a change to the starting quarterback.",
+        "subtype": "administrative",
+        "permanence": "temporary",
+        "sourceReference": "doc:abc123#p4l22",
+        "timestampContext": "season_2020_week_03"
+      }
+    },
+    {
+      "name": "missing_actorRole_should_fail",
+      "shouldPass": false,
+      "object": {
+        "id": "CME_dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "eventType": "CME",
+        "action": "announced",
+        "objectRole": "starting_quarterback",
+        "contextRole": null,
+        "eventDescription": "A head coach announced a change to the starting quarterback.",
+        "subtype": "administrative",
+        "permanence": "permanent",
+        "sourceReference": "doc:abc123#p4l22",
+        "timestampContext": "season_2020_week_03"
+      }
+    },
+    {
+      "name": "objectRole_null_should_pass",
+      "shouldPass": true,
+      "object": {
+        "id": "CME_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "eventType": "CME",
+        "actorRole": "head_coach",
+        "action": "announced",
+        "objectRole": null,
+        "contextRole": "team_leadership",
+        "eventDescription": "A head coach announced a change to the starting quarterback.",
+        "subtype": "administrative",
+        "permanence": "permanent",
+        "sourceReference": "doc:abc123#p4l22",
+        "timestampContext": "season_2020_week_03"
+      }
+    },
+    {
+      "name": "extra_field_should_fail",
+      "shouldPass": false,
+      "object": {
+        "id": "CME_ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "eventType": "CME",
+        "actorRole": "head_coach",
+        "action": "announced",
+        "objectRole": "starting_quarterback",
+        "contextRole": null,
+        "eventDescription": "A head coach announced a change to the starting quarterback.",
+        "subtype": "administrative",
+        "permanence": "permanent",
+        "sourceReference": "doc:abc123#p4l22",
+        "timestampContext": "season_2020_week_03",
+        "importanceScore": 9
+      }
+    }
+  ]
+}

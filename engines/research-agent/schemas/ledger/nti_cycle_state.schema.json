@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "nti_cycle_state.schema.json",
+  "title": "NTICycleStateV1",
+  "description": "Per-season-run NTI cycle state. Tracks active surface, per-surface seal status, and NTI-level exhaustion counters. Stored at {activeRunPath}/nti_state.json. Distinct from season_state.exhaustionCounters (orchestrator end-of-batch level).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "currentSurface",
+    "surfaceSealStatus",
+    "exhaustionCounters",
+    "lastUpdated"
+  ],
+  "$comment": "Design authority: Research Agent Execution Roadmap Phase 2.5. No contract formally defines these fields — this schema was authored to fill the documented gap. Governing behaviour contracts: NTI-CYCLE-EXECUTION.md (surface rotation, sealing, exhaustion guard). Storage: parallel to state.json in active run directory.",
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "NTI_CYCLE_STATE-1.0"
+    },
+    "currentSurface": {
+      "type": ["string", "null"],
+      "description": "The NTI time surface currently active for extraction. One of the 8 Tier A surface tokens from EVENT_ENUM_REGISTRY_V1. Null until first surface is assigned."
+    },
+    "surfaceSealStatus": {
+      "type": "object",
+      "description": "Per-surface seal status. false = active (eligible for rotation). true = sealed (removed from future extraction rotation per NTI-CYCLE-EXECUTION.md Section VII).",
+      "additionalProperties": false,
+      "required": [
+        "offseason",
+        "training_camp",
+        "preseason",
+        "regular_season",
+        "playoffs",
+        "championship_week",
+        "draft_period",
+        "free_agency_period"
+      ],
+      "properties": {
+        "offseason":          { "type": "boolean" },
+        "training_camp":      { "type": "boolean" },
+        "preseason":          { "type": "boolean" },
+        "regular_season":     { "type": "boolean" },
+        "playoffs":           { "type": "boolean" },
+        "championship_week":  { "type": "boolean" },
+        "draft_period":       { "type": "boolean" },
+        "free_agency_period": { "type": "boolean" }
+      }
+    },
+    "exhaustionCounters": {
+      "type": "object",
+      "description": "NTI-audit-level exhaustion counters per surface. Incremented by NTI audit logic on exhaustion detection events. Distinct from season_state.exhaustionCounters (orchestrator end-of-batch tracking). Per NTI-CYCLE-EXECUTION.md Section VIII: exhaustion operates on structural distinctness.",
+      "additionalProperties": false,
+      "required": [
+        "offseason",
+        "training_camp",
+        "preseason",
+        "regular_season",
+        "playoffs",
+        "championship_week",
+        "draft_period",
+        "free_agency_period"
+      ],
+      "properties": {
+        "offseason":          { "type": "integer", "minimum": 0 },
+        "training_camp":      { "type": "integer", "minimum": 0 },
+        "preseason":          { "type": "integer", "minimum": 0 },
+        "regular_season":     { "type": "integer", "minimum": 0 },
+        "playoffs":           { "type": "integer", "minimum": 0 },
+        "championship_week":  { "type": "integer", "minimum": 0 },
+        "draft_period":       { "type": "integer", "minimum": 0 },
+        "free_agency_period": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "lastUpdated": {
+      "type": "string",
+      "minLength": 1,
+      "description": "ISO-8601 UTC timestamp of the last write. Operational metadata — does not participate in canonical identity."
+    }
+  }
+}

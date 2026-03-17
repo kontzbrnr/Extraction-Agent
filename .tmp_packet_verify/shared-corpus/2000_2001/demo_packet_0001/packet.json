@@ -1,0 +1,13 @@
+{
+  "packet_id": "demo_packet_0001",
+  "source_title": "Demo",
+  "publication": "DemoPub",
+  "author": "DemoAuthor",
+  "date_published": "20260315",
+  "url": "https://example.com",
+  "season_window": "2000-2001",
+  "team_context": [],
+  "narrative_tags": [],
+  "harvest_timestamp": "2026-03-15T22:43:20.645Z",
+  "harvester_version": "DeepSearcher-V1"
+}

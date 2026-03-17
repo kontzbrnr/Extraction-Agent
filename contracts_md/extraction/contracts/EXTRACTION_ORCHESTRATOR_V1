@@ -1,0 +1,475 @@
+EXTRACTION_ORCHESTRATOR_V2
+Status: Locked for implementation drafting
+Purpose: Deterministic orchestration from NTI source document -> REC -> AU split -> lane-specific canonical gates.
+
+--------------------------------------------------
+I. ROLE
+--------------------------------------------------
+
+The Extraction Orchestrator is the deterministic execution bridge between NTI intake material and the existing lane-specific canonicalization gates.
+
+It is responsible for:
+
+1. accepting one normalized NTI source document
+2. producing one REC from raw source text
+3. splitting that REC into atomic units
+4. routing atomic units into the pressure lane and narrative lane
+5. invoking the correct pre-canonical mappers/gates in the correct order
+6. returning a fully auditable stage bundle
+
+It is NOT responsible for:
+
+- search
+- packet enumeration
+- packet loading
+- packet writing
+- freeform inference
+- semantic compression
+- subclass invention
+- pressure reinterpretation
+- canonical ID strategy definition
+- cross-run dedup policy
+- registry mutation semantics beyond returning outputs to caller
+
+--------------------------------------------------
+II. INPUT CONTRACT
+--------------------------------------------------
+
+The orchestrator accepts exactly one NTI source document.
+
+Input shape:
+
+NtiSourceDocument {
+  sourceId: string
+  sourceType: "harvest_packet"
+  seasonWindow: string
+  title: string
+  publication: string
+  author: string
+  url: string
+  rawText: string
+  teamContext: string[]
+  narrativeTags: string[]
+}
+
+Input invariants:
+
+- sourceId must be non-empty
+- rawText must be non-empty
+- rawText must already be cleaned prose
+- rawText must not be HTML / JS / navigation residue
+- one source document only per invocation
+- no batching in V2
+
+--------------------------------------------------
+III. OUTPUT CONTRACT
+--------------------------------------------------
+
+The orchestrator returns one deterministic result bundle.
+
+ExtractionOrchestratorResult {
+  sourceId: string
+  sourceReference: string
+
+  rec: dict | null
+
+  atomicUnits: list[dict]
+  pcrs: list[dict]
+  splitRejections: list[dict]
+
+  pressureLane: {
+    ploRecords: list[dict]
+    cpsObjects: list[dict]
+    cpsRejections: list[dict]
+    cpsAudit: list[dict]
+  }
+
+  narrativeLane: {
+    ncaInputs: list[dict]
+    ncaAccepted: list[dict]
+    ncaRejected: list[dict]
+    santaInputs: list[dict]
+    csnObjects: list[dict]
+    csnRejections: list[dict]
+  }
+
+  stageStatus: {
+    recProduced: boolean
+    splitExecuted: boolean
+    pressureLaneExecuted: boolean
+    narrativeLaneExecuted: boolean
+  }
+}
+
+Output invariants:
+
+- all fields always present
+- empty arrays, not omitted arrays
+- no silent stage drops
+- stage-local failure must be visible in structured output
+
+--------------------------------------------------
+IV. SOURCE REFERENCE RULE
+--------------------------------------------------
+
+V2 source reference rule:
+
+sourceReference = sourceId
+
+This sourceReference is passed to:
+
+- split_rec(...)
+- enforce_plo_e(...)
+- narrative event candidates
+- SANTA event inputs
+
+No alternate source reference derivation permitted in V2.
+
+--------------------------------------------------
+V. STAGE ORDER (LOCKED)
+--------------------------------------------------
+
+Exact order:
+
+1. produce_rec(rawText, is_composite=False)
+2. split_rec(rec, sourceReference)
+
+Pressure lane:
+3P. map AUs through enforce_plo_e(...)
+4P. send resulting plo_record(s) to enforce_psta(...)
+
+Narrative lane:
+3N. build event candidates from AUs
+4N. run enforce_nca(event)
+5N. if classification == "CSN", run enforce_santa(event_with_nca_result)
+
+No reordering allowed.
+
+--------------------------------------------------
+VI. STAGE 1 — REC PRODUCTION
+--------------------------------------------------
+
+Callable:
+produce_rec(text: str, is_composite: bool = False) -> dict
+
+Invocation:
+produce_rec(rawText, False)
+
+Rules:
+
+- rawText passed exactly as received
+- no pre-summarization
+- no chunking
+- no rewriting
+
+Failure behavior:
+
+- if REC production fails:
+  - rec = null
+  - downstream arrays empty
+  - stageStatus.recProduced = false
+  - no later stages execute
+
+--------------------------------------------------
+VII. STAGE 2 — REC SPLIT
+--------------------------------------------------
+
+Callable:
+split_rec(rec: dict, source_reference: str) -> tuple[list[dict], list[dict], list[dict]]
+
+Invocation:
+split_rec(rec, sourceReference)
+
+Outputs:
+
+- atomicUnits = first tuple element
+- pcrs = second tuple element
+- splitRejections = third tuple element
+
+Rules:
+
+- split called exactly once per successful REC
+- all three outputs preserved
+- PCRs preserved but not used in pressure mint path in V2
+
+Failure behavior:
+
+- rec preserved
+- atomicUnits = []
+- pcrs = []
+- splitRejections contains structured split failure
+- no lane stages execute
+
+--------------------------------------------------
+VIII. PRESSURE LANE — GROUND TRUTH
+--------------------------------------------------
+
+V2 pressure lane is:
+
+AUs
+-> enforce_plo_e(...)
+-> plo_record
+-> enforce_psta(...)
+
+Important lock:
+
+PSTA does NOT consume AUs directly.
+PSTA does NOT consume PCRs directly.
+PSTA consumes plo_record["observations"]-style input through a full PLO record.
+
+This matches the implemented pressure mint expectations and the PSTA contract, which requires validated PLO-E style input and is post-critic / canonicalization-only. :contentReference[oaicite:0]{index=0}
+
+--------------------------------------------------
+IX. PRESSURE LANE — PLO MAPPING
+--------------------------------------------------
+
+Known upstream mapper:
+enforce_plo_e(au, observations, source_reference)
+
+V2 rule:
+
+- each eligible AU may be passed into enforce_plo_e(...)
+- orchestrator must preserve resulting plo_record(s)
+- no custom AU->PLO field invention outside the known mapper
+- PCRs are not used as PSTA inputs in V2
+
+SourceSeedText rule:
+
+- sourceSeedText derives from AU text through the existing PLO-E path, not from orchestrator invention
+
+Observation rule:
+
+- plo_record must include observations shaped for PSTA consumption
+- orchestrator does not handcraft PSTA observation dicts if enforce_plo_e already provides the path
+
+--------------------------------------------------
+X. PRESSURE LANE — PSTA EXECUTION
+--------------------------------------------------
+
+Callable:
+enforce_psta(plo_record, enum_registry_version=...)
+
+Grounded PSTA input facts:
+
+- top-level sourceSeedText is optional/fallback
+- practical requirement is that plo_record.observations contain dicts with fields such as:
+  signalClass
+  environment
+  pressureSignalDomain
+  pressureVector
+  signalPolarity
+  observationSource
+  castRequirement
+  tier
+  observation
+
+PSTA failure conditions include:
+- duplicate canonical IDs
+- CPS schema invalid
+- enum/schema violations
+
+This is consistent with the PSTA contract: PSTA is transformational / identity-minting only, post-critic, and must receive validated pressure-legible observation style input rather than raw extracted material. :contentReference[oaicite:1]{index=1}
+
+V2 execution rule:
+
+- invoke enforce_psta once per produced plo_record
+- preserve canonical CPS objects
+- preserve rejections
+- preserve audit output
+- one failed plo_record does not halt remaining pressure lane records
+
+--------------------------------------------------
+XI. NARRATIVE LANE — GROUND TRUTH
+--------------------------------------------------
+
+V2 narrative lane is:
+
+AUs
+-> build event candidate
+-> enforce_nca(event)
+-> if classification == "CSN"
+-> enforce_santa(event_with_nca_result)
+
+Important lock:
+
+SANTA is not a classifier.
+SANTA accepts only CSN-classified inputs from NCA, consistent with its contract. :contentReference[oaicite:2]{index=2}
+
+--------------------------------------------------
+XII. NARRATIVE LANE — EVENT CANDIDATE CONSTRUCTION
+--------------------------------------------------
+
+V2 event candidate construction rule:
+
+- build event candidates from AUs only
+- one AU may yield zero or one event candidate
+- no multi-AU synthetic event composition in V2
+
+Minimum event candidate base:
+
+EventCandidate {
+  eventDescription: <AU text or deterministic event text derived from AU>
+  sourceReference: <sourceReference>
+  timestampContext: <deterministic metadata-derived value or fallback non-empty placeholder>
+  actorRole: <optional>
+  action: <optional>
+  objectRole: <optional>
+  contextRole: <optional>
+}
+
+Rules:
+
+- no invented causality
+- no multi-observation merging
+- timestampContext must be non-empty before SANTA path
+- if no reliable timestamp exists, use deterministic fallback policy defined by implementation, but it must remain stable and non-empty
+
+--------------------------------------------------
+XIII. NARRATIVE LANE — NCA EXECUTION
+--------------------------------------------------
+
+Callable:
+enforce_nca(event)
+
+V2 rule:
+
+- enforce_nca runs first on every event candidate
+- if NCA output classification != "CSN", do not send to SANTA
+- preserve NCA accepted/rejected outputs separately
+
+Derived-field rule:
+
+- classification and standaloneSubclass used by SANTA come from NCA output, not orchestrator invention
+
+--------------------------------------------------
+XIV. NARRATIVE LANE — SANTA EXECUTION
+--------------------------------------------------
+
+Callable:
+enforce_santa(event)
+
+Grounded SANTA input facts:
+
+Required:
+- classification == "CSN"
+- standaloneSubclass valid
+- eventDescription non-empty string
+- sourceReference string
+- timestampContext non-empty string
+
+Optional / nullable:
+- actorRole
+- action
+- objectRole
+- contextRole
+
+SANTA rejects:
+- non-CSN inputs
+- invalid/missing subclass
+- invalid/missing eventDescription
+- invalid/missing sourceReference
+- invalid/missing timestampContext
+- invalid identity field types
+- schema-invalid canonical output
+
+This matches the SANTA contract: SANTA receives CSN-classified input, canonicalizes only, does not classify or mutate meaning, and performs deterministic canonical archival normalization. :contentReference[oaicite:3]{index=3}
+
+V2 execution rule:
+
+- merge NCA-derived classification + standaloneSubclass into event candidate
+- invoke enforce_santa only when classification == "CSN"
+- preserve canonical CSN objects
+- preserve SANTA rejections
+- one failed event does not halt remaining narrative lane events
+
+--------------------------------------------------
+XV. DETERMINISM RULES
+--------------------------------------------------
+
+The orchestrator must be deterministic.
+
+Given the same NTI source document, it must:
+
+- call the same functions in the same order
+- derive the same sourceReference
+- produce the same event candidate inputs
+- produce the same lane inputs
+- produce the same structured result bundle shape
+
+Prohibited:
+
+- randomness
+- time-based branching
+- global mutable counters
+- opportunistic fallback variation
+- hidden state lookup
+
+--------------------------------------------------
+XVI. NO-INFERENCE RULES
+--------------------------------------------------
+
+The orchestrator may not:
+
+- summarize source material
+- invent pressure semantics
+- invent narrative subclass
+- merge AUs into broader claims
+- fill missing canonical fields with guessed content
+- reinterpret non-CSN material as CSN
+
+The orchestrator may:
+
+- map fields deterministically
+- invoke existing lane mappers/gates
+- preserve outputs
+- return structured diagnostics
+
+--------------------------------------------------
+XVII. FAILURE POLICY
+--------------------------------------------------
+
+Hard stop conditions:
+
+- invalid NTI input
+- REC production failure
+- split failure severe enough to produce no usable AUs
+
+Soft failure conditions:
+
+- one AU fails PLO mapping
+- one plo_record fails PSTA
+- one event fails NCA
+- one CSN candidate fails SANTA
+
+Soft failures must be recorded without halting the full document.
+
+--------------------------------------------------
+XVIII. NON-GOALS
+--------------------------------------------------
+
+V2 does not include:
+
+- PSCA integration
+- full live pressure lane eligibility verification upstream of PSTA
+- CME lane
+- batch execution
+- replay suppression
+- registry commit semantics
+- cross-document reconciliation
+- advanced timestamp recovery
+- narrative importance weighting
+
+--------------------------------------------------
+XIX. ACCEPTANCE TEST
+--------------------------------------------------
+
+Step A is complete when the following is true:
+
+Given one NTI source document from shared-corpus, the orchestrator can deterministically:
+
+1. produce one REC
+2. split it into AUs / PCRs / split rejections
+3. route AUs into the pressure lane through enforce_plo_e -> enforce_psta
+4. route AUs into the narrative lane through enforce_nca -> enforce_santa
+5. return a structured result bundle with preserved canonical outputs and preserved rejections
+6. perform no freeform inference and no dead-branch routing

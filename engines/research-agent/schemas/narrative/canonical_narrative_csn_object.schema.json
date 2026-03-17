@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Canonical Standalone Narrative (CSN) Object",
+  "description": "Canonical Standalone Narrative (CSN) object. Immutable post-mint. Time-participating (timestampContext present but excluded from fingerprint). Fingerprint: CSN_FINGERPRINT_V1 per SANTA v1.0. permanence field does not exist (Option B ruling).",
+  "type": "object",
+  "required": [
+    "laneType",
+    "id",
+    "eventType",
+    "actorRole",
+    "action",
+    "subclass",
+    "sourceReference",
+    "eventDescription",
+    "timestampContext",
+    "contractVersion"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "laneType": {
+      "type": "string",
+      "const": "NARRATIVE",
+      "description": "Lane type identifier — must be NARRATIVE"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^CSN_[a-f0-9]{64}$",
+      "description": "Canonical standalone narrative ID — content-derived SHA256 hash (CSN_FINGERPRINT_V1)"
+    },
+    "eventType": {
+      "type": "string",
+      "const": "CSN",
+      "description": "Event type — must be CSN (Canonical Standalone Narrative)"
+    },
+    "actorRole": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Actor role — fingerprint-participating field"
+    },
+    "action": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Action — fingerprint-participating field"
+    },
+    "objectRole": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Object role — fingerprint-participating field, optional/nullable"
+    },
+    "contextRole": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Context role — fingerprint-participating field, optional/nullable"
+    },
+    "subclass": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Subclass assigned by NCA — fingerprint-participating field"
+    },
+    "sourceReference": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Source reference — fingerprint-participating field"
+    },
+    "eventDescription": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Neutral declarative event description — not in fingerprint"
+    },
+    "timestampContext": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Precise time marker — not in fingerprint"
+    },
+    "contractVersion": {
+      "type": "string",
+      "description": "Contract version — immutable post-mint"
+    }
+  }
+}
