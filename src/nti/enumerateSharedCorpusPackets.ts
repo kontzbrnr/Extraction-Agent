@@ -1,16 +1,26 @@
 import fs from "fs";
 import path from "path";
 
-export function enumerateSharedCorpusPackets(season: string): string[] {
-  const seasonPath = path.join("shared-corpus", season);
+function candidateSeasonPaths(season: string): string[] {
+  const normalized = season.replace(/-/g, "_");
+  const denormalized = season.replace(/_/g, "-");
+  return [
+    path.join("shared-corpus", season),
+    path.join("shared-corpus", normalized),
+    path.join("shared-corpus", denormalized),
+  ];
+}
 
-  if (!fs.existsSync(seasonPath)) {
-    throw new Error(`Season corpus not found: ${seasonPath}`);
+export function enumerateSharedCorpusPackets(season: string): string[] {
+  const seasonPath = candidateSeasonPaths(season).find((candidate) => fs.existsSync(candidate));
+
+  if (!seasonPath) {
+    throw new Error(`Season corpus not found for: ${season}`);
   }
 
   const entries = fs.readdirSync(seasonPath);
 
   return entries
-    .map((e) => path.join(seasonPath, e))
-    .filter((p) => fs.lstatSync(p).isDirectory());
+    .map((entry) => path.join(seasonPath, entry))
+    .filter((entryPath) => fs.lstatSync(entryPath).isDirectory());
 }

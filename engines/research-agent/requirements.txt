@@ -1,5 +1,10 @@
-fastapi>=0.110.0
-uvicorn[standard]>=0.29.0
-python-multipart>=0.0.9
-jsonschema>=4.0.0
-pytest>=7.0.0
+fastapi==0.135.1
+pydantic==2.12.5
+uvicorn[standard]==0.42.0
+python-multipart==0.0.22
+jsonschema==4.26.0
+pytest==9.0.2
+httpx==0.28.1
+spacy==3.7.5
+# spaCy model required by engines.research_agent.agents.pressure.ssi_extractor
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl

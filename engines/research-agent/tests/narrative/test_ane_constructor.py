@@ -2,7 +2,8 @@ from copy import deepcopy
 
 import pytest
 
-from narrative.ane_constructor import build_ane_object
+from engines.research_agent.agents.narrative.ane_constructor import build_ane_object
+from engines.research_agent.agents.narrative.ane_fingerprint import derive_aneseed_fingerprint
 
 
 def _fields(**overrides):
@@ -20,13 +21,28 @@ def _fields(**overrides):
     return fields
 
 
+def _event_seed_id(fields: dict) -> str:
+    return derive_aneseed_fingerprint(
+        {
+            "actorRole": fields.get("actorRole"),
+            "action": fields.get("action"),
+            "objectRole": fields.get("objectRole"),
+            "contextRole": fields.get("contextRole"),
+            "timestampContext": fields.get("timestampContext"),
+            "sourceReference": fields.get("sourceReference"),
+        }
+    )
+
+
 def test_valid_full_fields_returns_ane_object():
-    obj = build_ane_object(_fields(), "ANESEED_" + "a" * 64)
+    fields = _fields()
+    obj = build_ane_object(fields, _event_seed_id(fields))
     assert obj["schemaVersion"] == "ANE-1.0"
 
 
 def test_field_order_matches_contract():
-    obj = build_ane_object(_fields(), "ANESEED_" + "a" * 64)
+    fields = _fields()
+    obj = build_ane_object(fields, _event_seed_id(fields))
     assert list(obj.keys()) == [
         "schemaVersion",
         "eventSeedId",
@@ -42,12 +58,14 @@ def test_field_order_matches_contract():
 
 
 def test_null_object_role_allowed():
-    obj = build_ane_object(_fields(objectRole=None), "ANESEED_" + "b" * 64)
+    fields = _fields(objectRole=None)
+    obj = build_ane_object(fields, _event_seed_id(fields))
     assert obj["objectRole"] is None
 
 
 def test_null_context_role_allowed():
-    obj = build_ane_object(_fields(contextRole=None), "ANESEED_" + "c" * 64)
+    fields = _fields(contextRole=None)
+    obj = build_ane_object(fields, _event_seed_id(fields))
     assert obj["contextRole"] is None
 
 
@@ -94,11 +112,17 @@ def test_bad_event_seed_id_raises_value_error():
 def test_input_fields_not_mutated():
     f = _fields()
     before = deepcopy(f)
-    _ = build_ane_object(f, "ANESEED_" + "f" * 64)
+    _ = build_ane_object(f, _event_seed_id(f))
     assert f == before
 
 
-def test_constructor_accepts_provided_id_without_deriving():
-    manual_id = "ANESEED_" + "1" * 64
-    obj = build_ane_object(_fields(actorRole="different_value"), manual_id)
-    assert obj["eventSeedId"] == manual_id
+def test_mismatched_seed_id_is_rejected():
+    with pytest.raises(ValueError, match="KP1/KP2/KP3"):
+        build_ane_object(_fields(actorRole="different_value"), "ANESEED_" + "1" * 64)
+
+
+def test_missing_kp_field_is_rejected():
+    fields = _fields()
+    fields.pop("objectRole")
+    with pytest.raises(ValueError, match="missing keypoints"):
+        build_ane_object(fields, "ANESEED_" + "2" * 64)

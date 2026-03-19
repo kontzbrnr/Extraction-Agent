@@ -380,3 +380,10 @@ export async function runExtractionOrchestratorV2(
     },
   };
 }
+
+
+export async function runExtractionPipeline(
+  input: NtiSourceDocument
+): Promise<ExtractionOrchestratorResult> {
+  return runExtractionOrchestratorV2(input);
+}

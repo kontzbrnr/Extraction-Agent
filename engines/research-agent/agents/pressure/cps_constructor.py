@@ -77,7 +77,7 @@ def build_cps_object(
             Values must be post-fallback (PSTA applies fallbacks before
             calling this function). None is permitted for tier.
         canonical_id:
-            Pre-minted canonical ID. Must match ^CPS_[a-f0-9]{64}$.
+            Pre-minted canonical ID. Must pass pressure.cps_id_format.validate_cps_id().
         enum_registry_version:
             Enum registry version string to embed in the object.
 

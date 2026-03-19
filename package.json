@@ -5,7 +5,7 @@
     "harvest:v1": "npx tsx engines/deep-search/corpus-harvester/runHarvest.ts",
     "intake:v1": "npx tsx engines/deep-search/agents/ingest/runIntake.ts",
     "dev": "npm --prefix mission-control run dev",
-    "nti": "ts-node src/nti/cli.ts"
+    "nti": "bun run src/nti/cli.ts"
   },
   "dependencies": {
     "@mozilla/readability": "^0.6.0",

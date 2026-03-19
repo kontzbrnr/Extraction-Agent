@@ -363,50 +363,76 @@ def _run_canonical_pipeline(
     cycle_snapshot: dict,
     collector: object,
 ) -> None:
-    """Run all canonical pipeline stages for one micro-batch.
+    """Run canonical extraction pipeline for one micro-batch.
 
-    Stub — Phase 13.1 skeleton only. No-op.
-
-    Full pipeline order per §XIV (Global Pipeline Ordering):
-        1.  Extraction Agent
-        2.  GSD — Global Split Doctrine
-        3.  Seed Typing
-        4.  PLO-E — Pressure-Legible Observation Expansion (pressure only)
-        5.  2A — PSAR Assembly + Enum Normalization
-        6.  PSCA — Pressure Signal Critic
-        7.  PSTA — Canonical Mint + Dedup Resolution
-        8.  CIV — enforce_civ() (validate, do not modify)
-        9.  Registry Commit — via collector → _commit_batch()
-        10. Cluster Engine
-        11. PQG — Pipeline Quality Governor
-
-    Contract prohibitions at this layer (§IV, §VIII):
-        - No canonical ID generation or fingerprint computation (INV-2)
-        - No deduplication logic (PSTA sole authority)
-        - No modification of worker outputs (INV-3)
-        - No ordering-dependent canonical identity (INV-5)
-
-    Args:
-        collector: BatchCollector instance. Call collector.add(lane, obj)
-                   for each pipeline-output canonical object.
+    Implementation uses the TypeScript extraction orchestrator V2 as the
+    sequencing engine, then forwards canonical outputs to the in-memory
+    batch collector for commit at batch boundary.
     """
-    packets_path = Path(active_run_path) / "shared-corpus" / season
-    packet_files = list(packets_path.glob("*.json"))
+    project_root = Path(__file__).resolve().parents[3]
 
-    for packet_file in packet_files:
-        with open(packet_file, "r", encoding="utf-8") as handle:
-            nti_doc = json.load(handle)
+    season_candidates = [
+        Path(ledger_root) / "shared-corpus" / season,
+        Path(ledger_root) / "shared-corpus" / season.replace("-", "_"),
+        Path(ledger_root) / "shared-corpus" / season.replace("_", "-"),
+    ]
+    season_path = next((candidate for candidate in season_candidates if candidate.exists()), None)
+    if season_path is None:
+        raise FileNotFoundError(f"Season corpus not found for: {season}")
 
+    # Packet format: shared-corpus/{season}/{packet_dir}/packet.json + raw.txt
+    # Legacy fallback: shared-corpus/{season}/*.json
+    packet_json_paths: list[Path] = sorted(season_path.glob("*/packet.json"))
+    if not packet_json_paths:
+        packet_json_paths = sorted(season_path.glob("*.json"))
+
+    for packet_json_path in packet_json_paths:
+        packet_dir = packet_json_path.parent
+        raw_path = packet_dir / "raw.txt"
+        if not raw_path.exists():
+            continue
+
+        with open(packet_json_path, "r", encoding="utf-8") as handle:
+            metadata = json.load(handle)
+        raw_text = raw_path.read_text(encoding="utf-8")
+        if not raw_text.strip():
+            continue
+
+        source_id = metadata.get("packet_id") or packet_dir.name
+        nti_doc = {
+            "sourceId": source_id,
+            "sourceType": "harvest_packet",
+            "seasonWindow": metadata.get("season_window", season),
+            "title": metadata.get("source_title", ""),
+            "publication": metadata.get("publication", ""),
+            "author": metadata.get("author", ""),
+            "url": metadata.get("url", ""),
+            "rawText": raw_text,
+            "teamContext": metadata.get("team_context", []),
+            "narrativeTags": metadata.get("narrative_tags", []),
+        }
+
+        # Execute TS extraction adapter in-process via Bun and parse JSON result.
+        # We use Bun because ts-node is unavailable in this environment.
+        script = (
+            "import { runExtraction } from './src/extraction/runExtraction.ts';"
+            "const chunks=[];"
+            "for await (const c of process.stdin) chunks.push(c);"
+            "const doc=JSON.parse(Buffer.concat(chunks).toString('utf8'));"
+            "const result=await runExtraction(doc);"
+            "process.stdout.write(JSON.stringify(result));"
+        )
         result = subprocess.run(
-            ["node", "dist/extraction/runExtraction.js"],
+            ["bun", "run", "--eval", script],
             input=json.dumps(nti_doc),
             text=True,
             capture_output=True,
+            cwd=str(project_root),
         )
-
         if result.returncode != 0:
-            print("Extraction failed:", result.stderr)
-            continue
+            raise RuntimeError(
+                f"Extraction failed for packet {source_id}: {result.stderr.strip() or result.stdout.strip()}"
+            )
 
         extraction_result = json.loads(result.stdout)
 

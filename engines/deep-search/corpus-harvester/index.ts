@@ -6,3 +6,6 @@ export * from "./packetBuilder";
 export * from "./packetWriter";
 export * from "./duplicateGuard";
 export * from "./utils";
+export * from "./metadataExtractor";
+export * from "./harvestConfig";
+export * from "./rateLimiter";

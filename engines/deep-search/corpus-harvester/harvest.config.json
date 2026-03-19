@@ -1,0 +1,14 @@
+{
+  "seasonWindow": "2000-2001",
+  "targetMinSources": 30,
+  "targetMaxSources": 40,
+  "outputRoot": "shared-corpus",
+  "harvesterVersion": "DeepSearcher-V1",
+  "querySetReference": "HARVEST_QUERIES_V1",
+  "braveApiKeyEnvVar": "BRAVE_API_KEY",
+  "rateLimits": {
+    "braveRequestsPerMinute": 20,
+    "articleFetchMaxConcurrent": 4,
+    "articleFetchPerDomainCooldownMs": 1000
+  }
+}

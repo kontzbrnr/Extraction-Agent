@@ -8,10 +8,31 @@ from __future__ import annotations
 import hashlib
 import re
 
-from narrative.ane_id_format import ANESEED_PATTERN, ANESEED_PREFIX
+from engines.research_agent.agents.narrative.ane_id_format import ANESEED_PATTERN, ANESEED_PREFIX, validate_aneseed_id
 
 ANE_FINGERPRINT_VERSION: str = "ANE_FINGERPRINT_V1"
 _ANE_FINGERPRINT_CONCAT_PREFIX: str = "ANE-1.0"
+
+ANE_KP1_FIELDS: tuple[str, ...] = ("actorRole", "action")
+ANE_KP2_FIELDS: tuple[str, ...] = ("objectRole", "contextRole", "timestampContext")
+ANE_KP3_FIELDS: tuple[str, ...] = ("sourceReference",)
+
+
+def _lock_fields_payload(fields: dict[str, str | None]) -> dict[str, str | None]:
+    lock_fields = ANE_KP1_FIELDS + ANE_KP2_FIELDS + ANE_KP3_FIELDS
+    missing = [key for key in lock_fields if key not in fields]
+    if missing:
+        raise ValueError(f"missing keypoints for ANE lock: {', '.join(missing)}")
+    return {key: fields.get(key) for key in lock_fields}
+
+
+def validate_aneseed_lock(fields: dict[str, str | None], event_seed_id: str) -> None:
+    """Validate KP1/KP2/KP3 lock and ANESEED derivation integrity."""
+    validate_aneseed_id(event_seed_id)
+    expected = derive_aneseed_fingerprint(_lock_fields_payload(fields))
+    if expected != event_seed_id:
+        raise ValueError("event_seed_id does not match KP1/KP2/KP3 lock derivation")
+
 
 _NORMALIZE_WS_RE = re.compile(r"\s+")
 _DISALLOWED_PUNCT_RE = re.compile(r"[^a-z0-9_]")

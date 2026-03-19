@@ -20,6 +20,9 @@ import json
 import os
 import pytest
 
+from engines.research_agent.agents.pressure.cps_fingerprint import derive_cps_fingerprint
+from engines.research_agent.enums.role_token_registry import PRESSURE_ENUM_REGISTRY_VERSION
+
 from tests.ledger.crash_harness import (
     crash_before_rename,
     crash_write_at_byte,
@@ -77,7 +80,27 @@ def _registry_path(tmp_path):
 
 
 def _cps_obj(canonical_id: str) -> dict:
-    return {"canonicalId": canonical_id, "lane": "CPS"}
+    fields = {
+        "signalClass": "structural_condition",
+        "environment": "organization",
+        "pressureSignalDomain": "authority_distribution",
+        "pressureVector": "authority",
+        "signalPolarity": "negative",
+        "observationSource": "internal_observer",
+        "castRequirement": "coach",
+        "tier": 2,
+        "observation": "authority allocation remains unresolved",
+        "sourceSeed": f"seed_for_{canonical_id}",
+    }
+    return {
+        "laneType": "PRESSURE",
+        "schemaVersion": "CPS-1.0",
+        "canonicalId": derive_cps_fingerprint(fields),
+        **fields,
+        "enumRegistryVersion": PRESSURE_ENUM_REGISTRY_VERSION,
+        "fingerprintVersion": "CPS_FINGERPRINT_V1",
+        "contractVersion": "CIV-1.0",
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -185,7 +208,7 @@ class TestCrashAtByteNMinus1:
                 atomic_write_json(path, data)
 
         atomic_write_json(path, data)
-        assert json.loads(_read_bytes(path))["CPS"][0]["canonicalId"] == "c1"
+        assert json.loads(_read_bytes(path))["CPS"][0]["canonicalId"] == data["CPS"][0]["canonicalId"]
 
 
 # ---------------------------------------------------------------------------
@@ -222,7 +245,7 @@ class TestCrashBeforeRename:
                 atomic_write_json(path, data)
 
         atomic_write_json(path, data)
-        assert json.loads(_read_bytes(path))["CPS"][0]["canonicalId"] == "retry_obj"
+        assert json.loads(_read_bytes(path))["CPS"][0]["canonicalId"] == data["CPS"][0]["canonicalId"]
 
 
 # ---------------------------------------------------------------------------
@@ -261,7 +284,8 @@ class TestRegistryAppendCrash:
         atomic_write_json(reg_path, EMPTY_REGISTRY)
 
         # Commit first object successfully
-        append_canonical_object(reg_path, "CPS", _cps_obj("cps_pre_crash"))
+        first_obj = _cps_obj("cps_pre_crash")
+        append_canonical_object(reg_path, "CPS", first_obj)
         assert lane_cardinality(reg_path, "CPS") == 1
 
         # Crash during second append
@@ -272,7 +296,7 @@ class TestRegistryAppendCrash:
         # First object is still there; second is not
         registry = read_registry(reg_path)
         assert len(registry["CPS"]) == 1
-        assert registry["CPS"][0]["canonicalId"] == "cps_pre_crash"
+        assert registry["CPS"][0]["canonicalId"] == first_obj["canonicalId"]
 
     def test_lane_isolation_after_crash(self, tmp_path):
         """Crash during CPS append must not corrupt other lane arrays (INV-4)."""
