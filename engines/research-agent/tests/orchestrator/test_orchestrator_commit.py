@@ -27,6 +27,7 @@ from infra.orchestration.runtime.orchestrator import (
     _commit_batch,
     _commit_canonical_object,
 )
+from engines.research_agent.agents.pressure.cps_fingerprint import derive_cps_fingerprint
 from engines.research_agent.agents.pressure.psta_schema import STATUS_DUPLICATE
 
 
@@ -276,3 +277,53 @@ def test_commit_batch_cps_duplicate_in_registry(tmp_path):
     # Verify registry still has exactly one CPS object.
     registry = json.loads(registry_path.read_text(encoding="utf-8"))
     assert len(registry["CPS"]) == 1
+
+
+def test_commit_canonical_object_end_to_end_cps_then_duplicate(tmp_path):
+    """Phase 1.3: valid CPS commits once, duplicate is rejected on second submit."""
+    registry_path = tmp_path / "canonical_objects.json"
+    cycle_snapshot = _make_cycle_snapshot()
+
+    atomic_write_json(
+        str(registry_path),
+        {k: (list(v) if isinstance(v, list) else v) for k, v in EMPTY_REGISTRY.items()},
+    )
+
+    cps_fields = {
+        "signalClass": "structural_condition",
+        "environment": "organization",
+        "pressureSignalDomain": "authority_distribution",
+        "pressureVector": "authority",
+        "signalPolarity": "negative",
+        "observationSource": "internal_observer",
+        "castRequirement": "franchise",
+        "tier": 2,
+        "observation": "authority allocation remains unresolved.",
+        "sourceSeed": "competing authority over play-calling",
+    }
+    canonical_id = derive_cps_fingerprint(cps_fields)
+    cps_obj = {
+        "laneType": "PRESSURE",
+        "schemaVersion": "CPS-1.0",
+        "canonicalId": canonical_id,
+        "enumRegistryVersion": "ENUM_v1.0",
+        "fingerprintVersion": "CPS_FINGERPRINT_V1",
+        "contractVersion": "CIV-1.0",
+        **cps_fields,
+    }
+
+    ok1, rejection1 = _commit_canonical_object(cps_obj, "CPS", registry_path, cycle_snapshot)
+    assert ok1 is True
+    assert rejection1 is None
+
+    registry_after_first = json.loads(registry_path.read_text(encoding="utf-8"))
+    assert len(registry_after_first["CPS"]) == 1
+    assert registry_after_first["CPS"][0]["canonicalId"] == cps_obj["canonicalId"]
+
+    ok2, rejection2 = _commit_canonical_object(cps_obj, "CPS", registry_path, cycle_snapshot)
+    assert ok2 is False
+    assert rejection2 is not None
+    assert rejection2["reasonCode"] == STATUS_DUPLICATE
+
+    registry_after_second = json.loads(registry_path.read_text(encoding="utf-8"))
+    assert len(registry_after_second["CPS"]) == 1

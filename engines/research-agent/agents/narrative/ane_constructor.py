@@ -5,7 +5,8 @@ Canonical ANE object constructor.
 
 from __future__ import annotations
 
-from narrative.ane_id_format import validate_aneseed_id
+from engines.research_agent.agents.narrative.ane_fingerprint import validate_aneseed_lock
+from engines.research_agent.agents.narrative.ane_id_format import validate_aneseed_id
 
 ANE_CONSTRUCTOR_VERSION: str = "ANE_CONSTRUCTOR-1.0"
 
@@ -27,6 +28,8 @@ def build_ane_object(ane_fields: dict, event_seed_id: str) -> dict:
         value = ane_fields[key]
         if not isinstance(value, str) or value == "":
             raise ValueError(f"{key} must be a non-empty string")
+
+    validate_aneseed_lock(ane_fields, event_seed_id)
 
     return {
         "schemaVersion": "ANE-1.0",

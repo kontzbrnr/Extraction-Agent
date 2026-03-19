@@ -10,13 +10,17 @@ export interface BraveSearchResult {
 
 export async function braveSearch(query: string): Promise<BraveSearchResult[]> {
   const url = `${BRAVE_ENDPOINT}?q=${encodeURIComponent(query)}&count=10`;
+  const apiKeyEnvVar = process.env.BRAVE_API_KEY_ENV_VAR ?? "BRAVE_API_KEY";
+  const apiKey = process.env[apiKeyEnvVar] ?? "";
+
   const headers = {
     Accept: "application/json",
-    "X-Subscription-Token": process.env.BRAVE_API_KEY ?? "",
+    "X-Subscription-Token": apiKey,
   };
 
   console.log("Brave query:", query);
-  console.log("API key present:", !!process.env.BRAVE_API_KEY);
+  console.log("Brave API env var:", apiKeyEnvVar);
+  console.log("API key present:", !!apiKey);
   console.log("Brave request URL:", url);
   console.log("Brave request headers:", headers);
 

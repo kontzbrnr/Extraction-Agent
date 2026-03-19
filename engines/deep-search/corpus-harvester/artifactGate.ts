@@ -35,9 +35,21 @@ function fingerprint(text: string): string {
 }
 
 export function artifactGate(packet: BuiltSourcePacket): ArtifactDecision {
-  console.log(
-    "[ArtifactGate] temporarily bypassed:",
-    packet.metadata?.url || packet.packetDirName
-  );
+  const content = packet.rawText.trim();
+  if (content.length === 0) {
+    console.warn("[ArtifactGate] empty raw text; rejecting:", packet.metadata?.url || packet.packetDirName);
+    return "reject";
+  }
+
+  const registry = loadRegistry();
+  const digest = fingerprint(content);
+
+  if (registry.has(digest)) {
+    console.log("[ArtifactGate] duplicate fingerprint; rejecting:", packet.metadata?.url || packet.packetDirName);
+    return "reject";
+  }
+
+  registry.add(digest);
+  saveRegistry(registry);
   return "accept";
 }

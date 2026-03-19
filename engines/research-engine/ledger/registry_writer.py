@@ -26,6 +26,13 @@ ID field per lane:
 import json
 from pathlib import Path
 
+from engines.research_agent.agents.civ.civ import enforce_civ
+from engines.research_agent.agents.civ.civ_schema import VALID_CIV_LANES
+from engines.research_agent.enums.role_token_registry import (
+    MEDIA_ENUM_REGISTRY_VERSION,
+    NARRATIVE_ENUM_REGISTRY_VERSION,
+    PRESSURE_ENUM_REGISTRY_VERSION,
+)
 from engines.research_engine.ledger.atomic_write import atomic_write_json
 
 
@@ -114,6 +121,37 @@ def _get_canonical_id(obj: dict, lane: str) -> str:
     return canonical_id
 
 
+
+
+def _civ_cycle_snapshot_for_obj(lane: str, obj: dict) -> dict:
+    """Build a defensive cycle_snapshot for registry-level CIV enforcement."""
+    lane_enum_defaults = {
+        "CPS": PRESSURE_ENUM_REGISTRY_VERSION,
+        "CME": MEDIA_ENUM_REGISTRY_VERSION,
+        "CSN": NARRATIVE_ENUM_REGISTRY_VERSION,
+        "MediaContext": MEDIA_ENUM_REGISTRY_VERSION,
+    }
+    return {
+        "schemaVersion": obj.get("schemaVersion") or "",
+        "enumVersion": obj.get("enumRegistryVersion") or lane_enum_defaults.get(lane, ""),
+        "contractVersion": obj.get("contractVersion") or "",
+    }
+
+
+def _enforce_registry_civ_guard(lane: str, obj: dict) -> None:
+    """Enforce CIV at registry boundary; raise RegistryAppendError on failure."""
+    if lane not in VALID_CIV_LANES:
+        return
+
+    passed, rejection, _ = enforce_civ(obj, lane, _civ_cycle_snapshot_for_obj(lane, obj))
+    if not passed:
+        reason = rejection.get("reasonCode") if isinstance(rejection, dict) else "REJECT_CIV_FAILED"
+        raise RegistryAppendError(
+            f"CIV validation failed at registry boundary for lane '{lane}': {reason}",
+            lane=lane,
+            canonical_id=str(obj.get(_LANE_ID_FIELD[lane], "")),
+        )
+
 def _lane_contains_id(lane_array: list, canonical_id: str, id_field: str) -> bool:
     """Return True if any existing object in the lane has the given canonical ID."""
     return any(existing_obj.get(id_field) == canonical_id for existing_obj in lane_array)
@@ -152,6 +190,8 @@ def append_canonical_object(registry_path, lane: str, obj: dict) -> None:
         )
 
     registry = _load_registry(registry_path)
+
+    _enforce_registry_civ_guard(lane, obj)
 
     canonical_id = _get_canonical_id(obj, lane)
 

@@ -146,3 +146,14 @@ def derive_cps_fingerprint(cps_fields: dict) -> str:
         f"This is an internal invariant violation."
     )
     return canonical_id
+
+
+def verify_cps_fingerprint(cps_fields: dict, canonical_id: str) -> bool:
+    """Return True when canonical_id matches CPS_FINGERPRINT_V1 derivation."""
+    parts: list[str] = [_CPS_SCHEMA_PREFIX] + [
+        _normalize(cps_fields[field]) for field in CPS_FINGERPRINT_FIELDS
+    ]
+    canonical_string = "|".join(parts)
+    digest = hashlib.sha256(canonical_string.encode("utf-8")).hexdigest()
+    expected = CPS_ID_PREFIX + digest
+    return expected == canonical_id

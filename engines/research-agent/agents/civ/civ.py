@@ -21,8 +21,8 @@ Implementation status:
     Check 3 (Identity Abstraction)  — Phase 11.4 stub
     Check 4 (Time Binding)          — Phase 11.5 stub
     Check 5 (ID Integrity)          — Phase 11.6 stub
-    Check 6 (Version Snapshot)      — Phase 11.7 stub
-    Check 7 (Lane Contamination)    — Phase 11.8 stub
+    Check 6 (Version Snapshot)      — Phase 11.7 ✓
+    Check 7 (Lane Contamination)    — Phase 11.8 ✓
 
 Invariant compliance:
     INV-1: No module-level mutable state. No cross-call memory.
@@ -51,7 +51,7 @@ from engines.research_agent.enums.role_token_registry import (
 from engines.research_agent.agents.extraction.proper_noun_detector import contains_proper_noun
 from engines.research_agent.agents.mcp.mcr_fingerprint import MCRFingerprintInputError, derive_mcr_fingerprint
 from engines.research_agent.agents.meta.meta_ruleset import derive_cme_fingerprint
-from engines.research_agent.agents.pressure.cps_fingerprint import CPS_FINGERPRINT_FIELDS, derive_cps_fingerprint
+from engines.research_agent.agents.pressure.cps_fingerprint import CPS_FINGERPRINT_FIELDS, verify_cps_fingerprint
 from engines.research_agent.agents.santa.santa_ruleset import derive_csn_fingerprint
 from engines.research_agent.schemas.cme_validator import (
     CMECanonicalValidationError,
@@ -79,11 +79,15 @@ from engines.research_agent.agents.civ.civ_schema import (
     CPS_ENUM_FIELD_MAP,
     CPS_IDENTITY_SCAN_FIELDS,
     CSN_ENUM_FIELD_MAP,
+    CSN_VERSION_FIELD_MAP,
     CSN_IDENTITY_SCAN_FIELDS,
     CSN_IDENTITY_SCAN_NULLABLE_FIELDS,
     CSN_NULLABLE_ENUM_FIELDS,
+    CPS_VERSION_FIELD_MAP,
+    CME_VERSION_FIELD_MAP,
     MEDIA_CONTEXT_IDENTITY_SCAN_FIELDS,
     MEDIA_CONTEXT_REGISTRY_ENUM_FIELDS,
+    MEDIA_CONTEXT_VERSION_FIELD_MAP,
     REJECT_ENUM_INVALID,
     REJECT_ID_HASH_MISMATCH,
     REJECT_IDENTITY_CONTAMINATION,
@@ -419,10 +423,11 @@ def _check_id_integrity(
     """
     try:
         if lane == "CPS":
-            derived = derive_cps_fingerprint(
-                {field: obj[field] for field in CPS_FINGERPRINT_FIELDS}
-            )
+            cps_fields = {field: obj[field] for field in CPS_FINGERPRINT_FIELDS}
             stored = obj.get("canonicalId")
+            if not verify_cps_fingerprint(cps_fields, stored):
+                return (False, REJECT_ID_HASH_MISMATCH)
+            return (True, None)
 
         elif lane == "CME":
             derived = derive_cme_fingerprint({
@@ -465,12 +470,29 @@ def _check_id_integrity(
 def _check_version_snapshot(
     obj: dict, lane: str, cycle_snapshot: dict
 ) -> tuple[bool, str | None]:
-    """Stub — CIV §III.6: Version Snapshot Integrity.
+    """CIV §III.6: Version Snapshot Integrity.
 
-    Will verify: schemaVersion, enumVersion, contractVersion in object
-    match orchestrator cycle_snapshot values.
-    Implementation: Phase 11.7.
+    Verifies that all lane-governed version-bearing object fields match the
+    current cycle snapshot values provided by the orchestrator.
+
+    Comparison is lane-aware through per-lane field maps in civ_schema:
+        cycle_snapshot key -> canonical object field key
+
+    Lanes with no version-bearing canonical fields (CME) are a structural
+    no-op and always pass.
     """
+    lane_map: dict[str, dict[str, str]] = {
+        "CPS": CPS_VERSION_FIELD_MAP,
+        "CME": CME_VERSION_FIELD_MAP,
+        "CSN": CSN_VERSION_FIELD_MAP,
+        "MediaContext": MEDIA_CONTEXT_VERSION_FIELD_MAP,
+    }
+
+    version_map = lane_map[lane]
+    for snapshot_key, object_key in version_map.items():
+        if obj.get(object_key) != cycle_snapshot.get(snapshot_key):
+            return (False, REJECT_VERSION_MISMATCH)
+
     return (True, None)
 
 

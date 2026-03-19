@@ -54,7 +54,7 @@ def detect_cps_duplicate(
 
     Args:
         canonical_id:  CPS canonical ID to check. Must match
-                       ^CPS_[a-f0-9]{64}$.
+                       the CPS ID format lock (validate_cps_id).
         registry_path: Path to canonical_objects.json.
 
     Returns:
